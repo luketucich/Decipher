@@ -1,15 +1,16 @@
 {
   "dependencies": {
     "@prisma/client": "^6.6.0",
+    "cheerio": "^1.0.0",
+    "compromise": "^14.14.4",
     "dotenv": "^16.4.7",
     "express": "^5.1.0"
   },
   "name": "server",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --watch index.js"
   },
   "keywords": [],
   "author": "",

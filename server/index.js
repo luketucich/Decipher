@@ -1,32 +1,27 @@
 require("dotenv").config();
 const express = require("express");
-const https = require("https");
-const { hintExtractor } = require("./controllers/scraper");
+const { hintExtractor } = require("./controllers/wikiFetcher");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get("/:keyword", (req, res) => {
-  const keyword = encodeURIComponent(req.params.keyword);
-  const url = `https://simple.wikipedia.org/wiki/${keyword}`;
+app.get("/:keyword", async (req, res) => {
+  const keyword = decodeURIComponent(req.params.keyword);
+  const result = await hintExtractor(keyword);
 
-  https
-    .get(url, (response) => {
-      let data = "";
+  // Create HTML with unordered list
+  let html = "<html><body><ul>";
 
-      response.on("data", (chunk) => {
-        data += chunk;
-      });
+  // Add each result as a list item
+  result.forEach((item) => {
+    html += `<li>${item}</li>`;
+  });
 
-      response.on("end", () => {
-        console.log(hintExtractor(data, keyword));
-        res.send(data);
-      });
-    })
-    .on("error", (err) => {
-      console.error("Error fetching Wikipedia:", err.message);
-      res.status(500).send("Error fetching the Wikipedia page.");
-    });
+  html += "</ul></body></html>";
+
+  // Set Content-Type header to HTML and send the response
+  res.setHeader("Content-Type", "text/html");
+  res.send(html);
 });
 
 app.listen(PORT, () => {

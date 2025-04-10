@@ -1,10 +1,10 @@
 {
   "dependencies": {
     "@prisma/client": "^6.6.0",
-    "cheerio": "^1.0.0",
     "compromise": "^14.14.4",
     "dotenv": "^16.4.7",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "natural": "^8.0.1"
   },
   "name": "server",
   "version": "1.0.0",
@@ -15,5 +15,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "prisma": "^6.6.0"
+  }
 }

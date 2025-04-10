@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 app.get("/:keyword", async (req, res) => {
   const keyword = decodeURIComponent(req.params.keyword);
-  const result = (await hintExtractor(keyword)).slice(0, 5);
+  const result = (await hintExtractor(keyword)).slice(0, 5).reverse();
 
   // Create HTML with unordered list
   let html = "<html><body><ul>";

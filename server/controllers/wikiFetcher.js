@@ -70,9 +70,9 @@ const cleanText = (text, keyword) => {
   const variations = getKeywordVariations(keyword);
   console.log("Variations:", variations);
 
-  // Replace each variation with blanks
   for (const variation of variations) {
-    text = text.replace(new RegExp(`\\b${variation}\\w*\\b`, "gi"), "_____");
+    // Find the variation anywhere within words and replace just that part
+    text = text.replace(new RegExp(variation, "gi"), "_____");
   }
 
   // Remove content within parentheses and brackets

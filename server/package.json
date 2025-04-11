@@ -10,7 +10,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node --watch index.js"
+    "start": "node --watch index.js",
+    "populate": "node scripts/populateDatabase.js"
   },
   "keywords": [],
   "author": "",

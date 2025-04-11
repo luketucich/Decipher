@@ -1,0 +1,242 @@
+# Food & Beverages
+Pizza
+Apple
+Banana
+Rice
+Bread
+Ice cream
+Chocolate
+Coffee
+Pasta
+Potato
+Sandwich
+Soup
+Sushi
+Taco
+Pancake
+Tea
+Cookie
+Cheese
+Salad
+Cereal
+# Music & Musicians
+The Beatles
+Michael Jackson
+Madonna
+Queen
+Bob Marley
+Adele
+Beyoncé
+Jazz
+Hip hop
+Country
+# Movies, TV & Entertainment
+Star Wars
+Harry Potter
+The Simpsons
+Titanic
+Avatar
+Friends
+Hollywood
+Netflix
+The Lord of the Rings
+Batman
+James Bond
+YouTube
+Animation
+# Animals & Wildlife
+Dog
+Cat
+Elephant
+Lion
+Tiger
+Giraffe
+Penguin
+Dolphin
+Bear
+Horse
+Butterfly
+Eagle
+Whale
+Shark
+Monkey
+Zebra
+Kangaroo
+Bee
+Fish
+Spider
+Wolf
+Turtle
+# Elements & Materials
+Gold
+Silver
+Oxygen
+Hydrogen
+Carbon
+Iron
+Copper
+Helium
+Sodium
+Water
+Wood
+Plastic
+Glass
+Paper
+Cotton
+Rubber
+Oil
+Leather
+Diamond
+# Countries & Places
+United States
+China
+Egypt
+Brazil
+Australia
+India
+Japan
+France
+Italy
+Mexico
+Canada
+Russia
+Germany
+Spain
+United Kingdom
+Thailand
+Greece
+South Africa
+# Landmarks & Geography
+Mount Everest
+Amazon River
+Grand Canyon
+Eiffel Tower
+Niagara Falls
+Taj Mahal
+Great Barrier Reef
+Colosseum
+# Technology & Inventions
+Internet
+Telephone
+Computer
+Electricity
+Television
+Radio
+Camera
+Refrigerator
+Microwave
+Robot
+# Transportation
+Airplane
+Bicycle
+Train
+Bus
+Motorcycle
+Helicopter
+Ship
+Skateboard
+Rocket
+Taxi
+# Sports
+Basketball
+Football
+Baseball
+Tennis
+Golf
+Swimming
+Hockey
+Volleyball
+Running
+Skiing
+Surfing
+Yoga
+Chess
+# Space & Astronomy
+Moon
+Sun
+Earth
+Mars
+Jupiter
+Galaxy
+Solar System
+Planet
+Universe
+Comet
+Telescope
+Rocket
+Space station
+# History & Events
+World War II
+Renaissance
+Cold War
+Ancient Egypt
+Ancient Rome
+Middle Ages
+Civil Rights Movement
+Olympic Games
+Thanksgiving
+Christmas
+# Everyday Objects
+Chair
+Bed
+Clock
+Mirror
+Toothbrush
+Wallet
+Umbrella
+Hat
+Bag
+# Health & Medical
+Hospital
+Medicine
+Pharmacy
+Vaccine
+First aid
+# Weather & Seasons
+Rain
+Snow
+Wind
+Cloud
+Storm
+Summer
+Winter
+Fog
+Rainbow
+Temperature
+Humidity
+# Family & Relationships
+Marriage
+Family
+Aunt
+Uncle
+Cousin
+Baby
+# Clothing & Fashion
+Dress
+Underwear
+Jeans
+Skirt
+Uniform
+# Jobs & Professions
+Nurse
+Engineer
+Artist
+Lawyer
+Police
+Firefighter
+Pilot
+Scientist
+Actor
+# Video Games
+Minecraft
+Fortnite
+The Legend of Zelda
+Super Mario
+Grand Theft Auto
+Pokémon
+FIFA
+Tetris
+Roblox
+Among Us
+# Public Figures
+Nelson Mandela

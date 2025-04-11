@@ -68,7 +68,6 @@ const getKeywordVariations = (keyword) => {
 const cleanText = (text, keyword) => {
   // Get all variations of the keyword
   const variations = getKeywordVariations(keyword);
-  console.log("Variations:", variations);
 
   for (const variation of variations) {
     // Find the variation anywhere within words and replace just that part
@@ -124,7 +123,7 @@ const isValidHint = (hint) => {
   return passesGrammarCheck(hint);
 };
 
-const hintExtractor = async (keyword) => {
+const getHints = async (keyword) => {
   const sentences = await textExtractor(keyword);
   const hints = [];
 
@@ -138,5 +137,6 @@ const hintExtractor = async (keyword) => {
 };
 
 module.exports = {
-  hintExtractor,
+  getKeywordVariations,
+  getHints,
 };

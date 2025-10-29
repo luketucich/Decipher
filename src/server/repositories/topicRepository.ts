@@ -9,6 +9,13 @@ export async function getTopicByDate(date: Date) {
   });
 }
 
+export async function getAllTopics() {
+  return prisma.topic.findMany({
+    select: { answer: true, type: true, date: true },
+    orderBy: { date: "desc" },
+  });
+}
+
 export async function createTopic(data: {
   answer: string;
   date: Date;

@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/server/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -9,11 +8,12 @@ datasource db {
 }
 
 model Topic {
-  id     String   @id @default(cuid())
-  answer String // The actual topic
-  date   DateTime @unique // The date this topic is featured
-  type   String // e.g., "Public Figure", "Movie", "Book", etc.
-  hints  Hint[]
+  id          String       @id @default(cuid())
+  answer      String // The actual topic
+  date        DateTime     @unique // The date this topic is featured
+  type        String // e.g., "Public Figure", "Movie", "Book", etc.
+  hints       Hint[]
+  submissions Submission[]
 
   @@index([date]) // Used to quickly find topics by date
 }
@@ -27,5 +27,18 @@ model Hint {
   order   Int // Order of the hint (1-5)
 
   @@unique([topicId, order]) // Ensure unique order per topic
+  @@index([topicId]) // For efficient lookups by topic
+}
+
+model Submission {
+  id        String   @id @default(cuid())
+  topicId   String
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  attempts  Int // Number of attempts made
+  guesses   String[] // List of guesses made, e.g., ["Einstein", "Newton"]
+  duration  Int // Time taken in seconds to guess correctly
+  success   Boolean  @default(false) // Whether the player guessed correctly
+  createdAt DateTime @default(now())
+
   @@index([topicId]) // For efficient lookups by topic
 }

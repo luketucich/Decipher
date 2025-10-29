@@ -8,13 +8,13 @@ export const getDaily = async (req: Request, res: Response) => {
     const topic = await getTopicByDate(new Date(today));
 
     if (!topic) {
-      return res.status(404).json({ message: "No topic found for today." });
+      return res.status(404).json({ message: "No topic found for today" });
     }
 
     return res.status(200).json(topic);
   } catch (error) {
     console.error("Error fetching daily topic:", error);
-    return res.status(500).json({ message: "Internal server error." });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -43,6 +43,6 @@ export const submitGame = async (req: Request, res: Response) => {
     return res.status(201).json(submission);
   } catch (error) {
     console.error("Error creating submission:", error);
-    res.status(500).json({ error: "Internal server error." });
+    res.status(500).json({ error: "Internal server error" });
   }
 };

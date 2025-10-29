@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/server/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Topic {
+  id     String   @id @default(cuid())
+  answer String // The actual topic
+  date   DateTime @unique // The date this topic is featured
+  type   String // e.g., "Public Figure", "Movie", "Book", etc.
+  hints  Hint[]
+
+  @@index([date]) // Used to quickly find topics by date
+}
+
+model Hint {
+  id      String @id @default(cuid())
+  topicId String
+  topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  content String // The hint content
+  type    String // Category, Emoji, Quote, Trivia, Definition
+  order   Int // Order of the hint (1-5)
+
+  @@unique([topicId, order]) // Ensure unique order per topic
+  @@index([topicId]) // For efficient lookups by topic
+}

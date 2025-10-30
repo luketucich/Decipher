@@ -100,4 +100,20 @@ struct AppTheme {
     static func hintTypeColor() -> Color {
         primary.opacity(Opacity.hintType)
     }
+    
+
+    static func hintContentFontSize(for content: String) -> Font {
+        let length = content.count
+        let size: CGFloat
+        if length < 8 {
+            size = 60
+        } else if length < 20 {
+            size = 32
+        } else if length < 60 {
+            size = 28
+        } else {
+            size = 20
+        }
+        return Font.system(size: size, weight: .semibold)
+    }
 }

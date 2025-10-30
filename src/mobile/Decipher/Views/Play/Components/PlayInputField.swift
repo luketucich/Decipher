@@ -3,6 +3,7 @@ import SwiftUI
 struct PlayInputField: View {
     @Binding var text: String
     var isFocused: FocusState<Bool>.Binding
+    var onSubmit: () -> Void
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
@@ -19,6 +20,7 @@ struct PlayInputField: View {
             )
             .focused(isFocused)
             .submitLabel(.done)
+            .onSubmit ({onSubmit()})
             .padding(.horizontal, 32)
             .padding(.bottom, 20)
             .animation(.easeInOut(duration: 0.25), value: isFocused.wrappedValue)

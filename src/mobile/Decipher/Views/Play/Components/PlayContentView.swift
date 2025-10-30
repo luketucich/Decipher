@@ -27,7 +27,13 @@ struct PlayContentView: View {
             
             PlayInputField(
                 text: $viewModel.userGuess,
-                isFocused: isInputFocused
+                isFocused: isInputFocused,
+                onSubmit: {
+                    if viewModel.currentHintIndex < 5 && !viewModel.userGuess.isEmpty {
+                        viewModel.currentHintIndex += 1
+                    }
+                    viewModel.userGuess = ""
+                }
             )
             
             Spacer()

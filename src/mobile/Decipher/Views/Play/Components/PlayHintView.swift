@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PlayHintView: View {
     let hint: Hint
+    
     @Environment(\.colorScheme) var colorScheme
     
     private var hintIconName: String {
@@ -36,7 +37,7 @@ struct PlayHintView: View {
             }
             
             Text(hint.content)
-                .font(AppTheme.Fonts.hintContent)
+                .font(AppTheme.hintContentFontSize(for: hint.content))
                 .foregroundColor(AppTheme.hintTextColor(for: colorScheme))
                 .multilineTextAlignment(.center)
                 .lineSpacing(6)

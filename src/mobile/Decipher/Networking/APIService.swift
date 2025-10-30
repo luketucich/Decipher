@@ -1,10 +1,3 @@
-//
-//  APIService.swift
-//  Decipher
-//
-//  Created by Luke on 10/29/25.
-//
-
 import Foundation
 
 class APIService {
@@ -14,12 +7,26 @@ class APIService {
     func fetchDailyTopic() async throws -> Topic {
         let url = URL(string: "\(baseURL)/play/daily")!
         
-        let (data, _) = try await URLSession.shared.data(from: url)
+        print("🔍 Fetching from: \(url)")
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        // Print the raw response
+        if let httpResponse = response as? HTTPURLResponse {
+            print("📡 Status Code: \(httpResponse.statusCode)")
+        }
+        
+        // Print raw JSON for debugging
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("📦 Raw JSON Response:")
+            print(jsonString)
+        }
         
         let decoder = JSONDecoder()
-        // If date is ISO, add this for auto-parsing (optional for now since date is String)
-//         decoder.dateDecodingStrategy = .iso8601
+        let topic = try decoder.decode(Topic.self, from: data)
         
-        return try decoder.decode(Topic.self, from: data)
+        print("✅ Successfully decoded topic: \(topic.answer)")
+        
+        return topic
     }
 }

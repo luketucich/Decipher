@@ -1,36 +1,35 @@
-//
-//  PlayViewModel.swift
-//  Decipher
-//
-//  Created by Luke on 10/29/25.
-//
-
 import Foundation
+import Combine
 
-@Observable class PlayViewModel {
-    var topic: Topic?  // Fetched topic (optional until loaded)
-    var isLoading: Bool = true
-    var errorMessage: String?  // For errors
+class PlayViewModel: ObservableObject {
+    @Published var topic: Topic?
+    @Published var isLoading: Bool = true
+    @Published var errorMessage: String?
+    @Published var userGuess: String = ""
+    @Published var currentHintIndex: Int = 1
+    @Published var topicNumber: Int = 1
     
-    var userGuess: String = ""  // Keep for input
+    private let apiService = APIService()
     
-    private let apiService = APIService()  // Our networking service
     
-    init() {
-        Task {  // Async init
-            await loadDailyTopic()
-        }
-    }
-    
-    func loadDailyTopic() async {
+    @MainActor
+    func fetchDailyTopic() async {
+        print("🚀 Starting fetch...")
+        isLoading = true
+        errorMessage = nil
+        
         do {
-            topic = try await apiService.fetchDailyTopic()
+            let fetched = try await apiService.fetchDailyTopic()
+            topic = fetched
+            topicNumber = 1
             isLoading = false
+            print("✅ Fetch complete! Topic: \(fetched.answer)")
         } catch {
-            errorMessage = error.localizedDescription
+            let errorMsg = error.localizedDescription
+            errorMessage = errorMsg
             isLoading = false
+            print("❌ Fetch failed: \(errorMsg)")
+            print("❌ Full error: \(error)")
         }
     }
-    
-    // Later: Add guess checker here
 }

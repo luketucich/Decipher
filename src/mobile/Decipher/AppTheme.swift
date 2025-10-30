@@ -10,12 +10,12 @@ struct AppTheme {
     static let backgroundGradientDarkBottom = Color(red: 0.12, green: 0.05, blue: 0.20)
     static let backgroundGradientLightTop = Color(red: 0.95, green: 0.88, blue: 1.0)
     static let backgroundGradientLightBottom = Color(red: 0.88, green: 0.75, blue: 0.98)
-    // Success colors - purple-tinted teal/mint green for harmony
-    static let success = Color(red: 0.20, green: 0.85, blue: 0.75)
-    static let successVariant = Color(red: 0.10, green: 0.75, blue: 0.65)
-    // Failure colors - purple-tinted coral/pink for softer feel
-    static let failure = Color(red: 0.95, green: 0.35, blue: 0.50)
-    static let failureVariant = Color(red: 0.85, green: 0.25, blue: 0.40)
+    // Success colors - vibrant green with purple undertones
+    static let success = Color(red: 0.00, green: 0.90, blue: 0.60)
+    static let successVariant = Color(red: 0.00, green: 0.80, blue: 0.50)
+    // Failure colors - vibrant red with purple undertones
+    static let failure = Color(red: 1.00, green: 0.20, blue: 0.50)
+    static let failureVariant = Color(red: 0.90, green: 0.10, blue: 0.40)
     
     // MARK: - Opacities
     struct Opacity {

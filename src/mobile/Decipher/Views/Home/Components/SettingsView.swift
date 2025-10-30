@@ -58,31 +58,19 @@ struct SettingsView: View {
                             .background(AppTheme.primary.opacity(0.2))
                         
                         // Theme Selector
-                        VStack(alignment: .leading, spacing: 10) {
-                            HStack {
-                                Image(systemName: "paintbrush.fill")
-                                    .font(.system(size: 18))
-                                    .foregroundColor(AppTheme.primary)
-                                    .frame(width: 24)
-                                
-                                Text("Theme")
-                                    .font(.system(size: 15, weight: .medium))
-                                    .foregroundColor(AppTheme.textColor(for: colorScheme))
-                            }
+                        HStack {
+                            Image(systemName: "paintbrush.fill")
+                                .font(.system(size: 18))
+                                .foregroundColor(AppTheme.primary)
+                                .frame(width: 24)
                             
-                            HStack(spacing: 10) {
-                                ForEach(AppSettings.AppTheme.allCases, id: \.self) { theme in
-                                    ThemeButton(
-                                        theme: theme,
-                                        isSelected: settings.appTheme == theme,
-                                        action: {
-                                            withAnimation(.easeInOut(duration: 0.2)) {
-                                                settings.appTheme = theme
-                                            }
-                                        }
-                                    )
-                                }
-                            }
+                            Text("Theme")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundColor(AppTheme.textColor(for: colorScheme))
+                            
+                            Spacer()
+                            
+                            ThemeSegmentedControl(selection: $settings.appTheme)
                         }
                     }
                     
@@ -101,30 +89,58 @@ struct SettingsView: View {
     }
 }
 
-struct ThemeButton: View {
-    let theme: AppSettings.AppTheme
-    let isSelected: Bool
-    let action: () -> Void
+struct ThemeSegmentedControl: View {
+    @Binding var selection: AppSettings.AppTheme
     @Environment(\.colorScheme) var colorScheme
+    @State private var hapticFeedback = UIImpactFeedbackGenerator(style: .light)
+    
+    private func iconName(for theme: AppSettings.AppTheme) -> String {
+        switch theme {
+        case .light:
+            return "sun.max.fill"
+        case .dark:
+            return "moon.fill"
+        case .system:
+            return "iphone"
+        }
+    }
     
     var body: some View {
-        Button(action: action) {
-            Text(theme.rawValue)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(isSelected ? .white : AppTheme.secondaryTextColor(for: colorScheme))
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(isSelected ? AppTheme.primary : Color.clear)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .strokeBorder(
-                                    isSelected ? Color.clear : AppTheme.primary.opacity(0.3),
-                                    lineWidth: 1.5
-                                )
+        HStack(spacing: 0) {
+            ForEach(AppSettings.AppTheme.allCases, id: \.self) { theme in
+                Button(action: {
+                    if AppSettings.shared.hapticsEnabled {
+                        hapticFeedback.impactOccurred()
+                    }
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selection = theme
+                    }
+                }) {
+                    Image(systemName: iconName(for: theme))
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(selection == theme ? .white : AppTheme.secondaryTextColor(for: colorScheme))
+                        .frame(width: 52, height: 36)
+                        .background(
+                            RoundedRectangle(cornerRadius: 7)
+                                .fill(selection == theme ? AppTheme.primary : Color.clear)
                         )
-                )
+                }
+                .buttonStyle(.plain)
+                
+                if theme != AppSettings.AppTheme.allCases.last {
+                    Rectangle()
+                        .fill(AppTheme.primary.opacity(0.2))
+                        .frame(width: 1, height: 20)
+                }
+            }
         }
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(AppTheme.primary.opacity(0.3), lineWidth: 1.5)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.03))
+                )
+        )
     }
 }

@@ -39,7 +39,7 @@ struct GameResultsView: View {
         
         let statusText = result.success ? "Won" : "Lost"
         return """
-        Decipher
+        Decipher #\(result.topicNumber)
         \(statusText) in \(result.attempts)/5 attempts
         \(emojiGrid)
         Time: \(formattedDuration)
@@ -146,7 +146,7 @@ struct GameResultsView: View {
             if index == result.attempts {
                 return AppTheme.success
             } else if index < result.attempts {
-                return AppTheme.primary
+                return AppTheme.failure
             } else {
                 return Color.gray.opacity(0.3)
             }

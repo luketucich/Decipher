@@ -36,7 +36,8 @@ struct PlayView: View {
                 }
             }
         }
-        .navigationBarBackButtonHidden(false)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
         .gesture(
             DragGesture()
                 .onChanged { _ in }

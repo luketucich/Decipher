@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PlayHeaderView: View {
     let topicNumber: Int
-    let topicType: String
     let currentHintIndex: Int
     let failedAttempts: Set<Int>
     let gameState: GameState
@@ -12,69 +11,35 @@ struct PlayHeaderView: View {
     @State private var progressAnimations: [Bool] = Array(repeating: false, count: 5)
     @State private var pulseAnimation = false
     
-    private var hintIconName: String {
-        switch topicType.lowercased() {
-        case "category":
-            return "tag.fill"
-        case "emoji":
-            return "face.smiling.inverse"
-        case "quote":
-            return "quote.opening"
-        case "trivia":
-            return "lightbulb.fill"
-        case "definition":
-            return "text.book.closed.fill"
-        default:
-            return "lightbulb.fill"
-        }
-    }
-    
     var body: some View {
-        VStack(spacing: 16) {
-            // Icon and hint type
-            VStack(spacing: 8) {
-                Image(systemName: hintIconName)
-                    .font(AppTheme.Fonts.hintIcon)
-                    .foregroundColor(AppTheme.primary)
-                
-                Text(topicType.uppercased())
-                    .font(AppTheme.Fonts.hintType)
-                    .tracking(1.2)
-                    .foregroundColor(AppTheme.hintTypeColor())
+        HStack(spacing: 6) {
+            ForEach(Array(0..<5), id: \.self) { (index: Int) in
+                ProgressSegment(
+                    index: index,
+                    currentHintIndex: currentHintIndex,
+                    failedAttempts: failedAttempts,
+                    gameState: gameState,
+                    colorScheme: colorScheme,
+                    animateWin: animateWin,
+                    progressAnimations: progressAnimations
+                )
             }
-            
-            // Progress bar
-            HStack(spacing: 6) {
-                ForEach(Array(0..<5), id: \.self) { (index: Int) in
-                    ProgressSegment(
-                        index: index,
-                        currentHintIndex: currentHintIndex,
-                        failedAttempts: failedAttempts,
-                        gameState: gameState,
-                        colorScheme: colorScheme,
-                        animateWin: animateWin,
-                        progressAnimations: progressAnimations
-                    )
-                }
-            }
-            .frame(maxWidth: 220)
-            .onChange(of: gameState) { _, newValue in
-                if newValue == .won {
-                    triggerWinAnimation()
-                } else if newValue == .lost {
-                    withAnimation(.easeInOut(duration: 0.6)) {
-                        pulseAnimation = true
-                    }
-                }
-            }
-            .onChange(of: failedAttempts) { _, _ in
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                    pulseAnimation.toggle()
+        }
+        .frame(maxWidth: 220)
+        .onChange(of: gameState) { _, newValue in
+            if newValue == .won {
+                triggerWinAnimation()
+            } else if newValue == .lost {
+                withAnimation(.easeInOut(duration: 0.6)) {
+                    pulseAnimation = true
                 }
             }
         }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 24)
+        .onChange(of: failedAttempts) { _, _ in
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                pulseAnimation.toggle()
+            }
+        }
     }
     
     private func triggerWinAnimation() {

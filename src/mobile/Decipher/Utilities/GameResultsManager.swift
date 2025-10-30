@@ -8,6 +8,7 @@ struct GameResult: Codable {
     let success: Bool
     let answer: String
     let completedAt: Date
+    let topicNumber: Int
 }
 
 class GameResultsManager {

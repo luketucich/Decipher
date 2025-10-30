@@ -13,6 +13,7 @@ struct PlayContentView: View {
     @ObservedObject var settings = AppSettings.shared
     @FocusState private var isInputFocused: Bool
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.dismiss) private var dismiss
     
     @State private var currentHintIndex = 1
     @State private var maxUnlockedHintIndex = 1
@@ -32,21 +33,41 @@ struct PlayContentView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            if let hint = topic.hints.first(where: { $0.order == currentHintIndex }) {
+            // Back button and progress bar aligned horizontally
+            HStack(spacing: 0) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(AppTheme.primary)
+                        .padding(12)
+                }
+                .padding(.leading, 8)
+                
+                Spacer()
+                
                 PlayHeaderView(
                     topicNumber: 1,
-                    topicType: hint.type,
                     currentHintIndex: currentHintIndex,
                     failedAttempts: failedAttempts,
                     gameState: gameState
                 )
                 .animation(nil, value: currentHintIndex)
+                
+                Spacer()
+                
+                // Invisible placeholder to balance the layout
+                Color.clear
+                    .frame(width: 44, height: 44)
+                    .padding(.trailing, 8)
             }
+            .padding(.top, 8)
             
             Spacer()
             
             if let hint = topic.hints.first(where: { $0.order == currentHintIndex }) {
-                PlayHintView(hint: hint)
+                PlayHintView(hint: hint, topicType: hint.type)
                     .transition(.asymmetric(
                         insertion: .move(edge: isMovingForward ? .trailing : .leading).combined(with: .opacity),
                         removal: .move(edge: isMovingForward ? .leading : .trailing).combined(with: .opacity)
@@ -151,7 +172,8 @@ struct PlayContentView: View {
                     duration: duration,
                     success: true,
                     answer: topic.answer,
-                    completedAt: Date()
+                    completedAt: Date(),
+                    topicNumber: topic.topicNumber
                 )
                 GameResultsManager.save(result)
                 PlayProgressManager.clear()
@@ -188,9 +210,9 @@ struct PlayContentView: View {
                 }
             }
             
-            if currentHintIndex < 5 {
+            if currentHintIndex <= 5 && !gameCompleted {
                 saveProgress()
-            } else {
+            } else if gameCompleted {
                 Task {
                     let duration = Int(Date().timeIntervalSince(startTime))
                     let allGuesses = (1...5).compactMap { guesses[$0] }
@@ -211,7 +233,8 @@ struct PlayContentView: View {
                         duration: duration,
                         success: false,
                         answer: topic.answer,
-                        completedAt: Date()
+                        completedAt: Date(),
+                        topicNumber: topic.topicNumber
                     )
                     GameResultsManager.save(result)
                     PlayProgressManager.clear()

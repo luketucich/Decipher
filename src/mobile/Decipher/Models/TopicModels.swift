@@ -6,6 +6,7 @@ struct Topic: Codable {
     let date: String
     let type: String
     let hints: [Hint]
+    let topicNumber: Int
 }
 
 struct Hint: Codable {

@@ -10,6 +10,12 @@ struct AppTheme {
     static let backgroundGradientDarkBottom = Color(red: 0.12, green: 0.05, blue: 0.20)
     static let backgroundGradientLightTop = Color(red: 0.95, green: 0.88, blue: 1.0)
     static let backgroundGradientLightBottom = Color(red: 0.88, green: 0.75, blue: 0.98)
+    // Success colors - purple-tinted teal/mint green for harmony
+    static let success = Color(red: 0.20, green: 0.85, blue: 0.75)
+    static let successVariant = Color(red: 0.10, green: 0.75, blue: 0.65)
+    // Failure colors - purple-tinted coral/pink for softer feel
+    static let failure = Color(red: 0.95, green: 0.35, blue: 0.50)
+    static let failureVariant = Color(red: 0.85, green: 0.25, blue: 0.40)
     
     // MARK: - Opacities
     struct Opacity {
@@ -40,8 +46,8 @@ struct AppTheme {
         static let hintIcon = Font.system(size: 28, weight: .semibold)
         static let hintType = Font.system(size: 11, weight: .bold)
         static let hintContent = Font.system(size: 28, weight: .semibold)
-        static let headerDaily = Font.system(size: 15, weight: .semibold)
-        static let headerType = Font.system(size: 12, weight: .medium)
+        static let headerDaily = Font.system(size: 18, weight: .semibold)
+        static let headerType = Font.system(size: 15, weight: .medium)
         static let progressChevron = Font.system(size: 16, weight: .semibold)
         static let progressCounter = Font.system(size: 15, weight: .semibold)
     }
@@ -101,19 +107,27 @@ struct AppTheme {
         primary.opacity(Opacity.hintType)
     }
     
-
+    // Stepped font sizing every ~5 characters, capped at 52 max and 24 min
     static func hintContentFontSize(for content: String) -> Font {
         let length = content.count
         let size: CGFloat
-        if length < 8 {
-            size = 60
-        } else if length < 20 {
-            size = 32
-        } else if length < 60 {
-            size = 28
-        } else {
-            size = 20
+        
+        switch length {
+        case 0...4:    size = 52
+        case 5...9:    size = 48
+        case 10...14:  size = 44
+        case 15...19:  size = 40
+        case 20...24:  size = 38
+        case 25...29:  size = 36
+        case 30...34:  size = 34
+        case 35...39:  size = 32
+        case 40...44:  size = 30
+        case 45...49:  size = 28
+        case 50...59:  size = 26
+        default:       size = 24
         }
+        
         return Font.system(size: size, weight: .semibold)
     }
 }
+

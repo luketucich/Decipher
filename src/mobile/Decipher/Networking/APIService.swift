@@ -1,32 +1,41 @@
 import Foundation
 
 class APIService {
-    
     private let baseURL = "http://localhost:3000"
     
     func fetchDailyTopic() async throws -> Topic {
         let url = URL(string: "\(baseURL)/play/daily")!
-        
-        print("🔍 Fetching from: \(url)")
-        
         let (data, response) = try await URLSession.shared.data(from: url)
         
-        // Print the raw response
-        if let httpResponse = response as? HTTPURLResponse {
-            print("📡 Status Code: \(httpResponse.statusCode)")
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw URLError(.badServerResponse)
         }
         
-        // Print raw JSON for debugging
-        if let jsonString = String(data: data, encoding: .utf8) {
-            print("📦 Raw JSON Response:")
-            print(jsonString)
+        return try JSONDecoder().decode(Topic.self, from: data)
+    }
+    
+    func submitGame(topicId: String, attempts: Int, guesses: [String], duration: Int, success: Bool) async throws {
+        let url = URL(string: "\(baseURL)/play/submit")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body: [String: Any] = [
+            "topicId": topicId,
+            "attempts": attempts,
+            "guesses": guesses,
+            "duration": duration,
+            "success": success
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw URLError(.badServerResponse)
         }
-        
-        let decoder = JSONDecoder()
-        let topic = try decoder.decode(Topic.self, from: data)
-        
-        print("✅ Successfully decoded topic: \(topic.answer)")
-        
-        return topic
     }
 }

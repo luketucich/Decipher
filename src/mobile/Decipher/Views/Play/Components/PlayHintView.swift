@@ -22,6 +22,7 @@ struct PlayHintView: View {
         }
     }
     
+    
     var body: some View {
         VStack(spacing: 16) {
             // Icon and hint type

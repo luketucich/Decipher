@@ -4,6 +4,23 @@ struct AppTheme {
     // MARK: - Colors
     static let primary = Color(red: 0.64, green: 0.20, blue: 1.0)
     static let primaryVariant = Color(red: 0.54, green: 0.10, blue: 0.90)
+    
+    // Purple/Pink variations for color variety
+    static let purple1 = Color(red: 0.70, green: 0.25, blue: 1.0)
+    static let purple2 = Color(red: 0.58, green: 0.15, blue: 0.95)
+    static let purple3 = Color(red: 0.50, green: 0.10, blue: 0.85)
+    static let pink = Color(red: 1.0, green: 0.30, blue: 0.70)
+    static let pinkVariant = Color(red: 0.90, green: 0.20, blue: 0.60)
+    static let pink2 = Color(red: 0.95, green: 0.25, blue: 0.75)
+    
+    // Accent colors (kept for potential use)
+    static let blue = Color(red: 0.20, green: 0.60, blue: 1.0)
+    static let blueVariant = Color(red: 0.10, green: 0.50, blue: 0.90)
+    static let teal = Color(red: 0.00, green: 0.80, blue: 0.80)
+    static let tealVariant = Color(red: 0.00, green: 0.70, blue: 0.70)
+    static let orange = Color(red: 1.0, green: 0.50, blue: 0.00)
+    static let orangeVariant = Color(red: 0.90, green: 0.40, blue: 0.00)
+    
     static let hintTextDark = Color(red: 0.90, green: 0.75, blue: 1.0)
     static let hintTextLight = Color(red: 0.40, green: 0.10, blue: 0.60)
     static let backgroundGradientDarkTop = Color(red: 0.08, green: 0.02, blue: 0.15)
@@ -128,6 +145,53 @@ struct AppTheme {
         }
         
         return Font.system(size: size, weight: .semibold)
+    }
+    
+    // MARK: - Liquid Glass Effect
+    static func liquidGlass(for colorScheme: ColorScheme) -> some View {
+        ZStack {
+            // Base blur effect - same material approach for both modes
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(colorScheme == .dark ? .ultraThinMaterial : .thinMaterial)
+            
+            // Gradient overlay - similar subtle approach
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            colorScheme == .dark 
+                                ? Color.white.opacity(0.05) 
+                                : Color.black.opacity(0.02),
+                            colorScheme == .dark 
+                                ? Color.white.opacity(0.01) 
+                                : Color.black.opacity(0.005)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            
+            // Border with subtle glow - similar approach
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: colorScheme == .dark 
+                            ? [Color.white.opacity(0.15), Color.white.opacity(0.08)]
+                            : [Color.black.opacity(0.15), Color.black.opacity(0.08)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1.5
+                )
+                .shadow(
+                    color: colorScheme == .dark 
+                        ? Color.white.opacity(0.03)
+                        : Color.black.opacity(0.08),
+                    radius: 8,
+                    x: 0,
+                    y: 2
+                )
+        }
     }
 }
 

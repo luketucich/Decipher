@@ -5,7 +5,7 @@ struct HowToPlayView: View {
     @Binding var isPresented: Bool
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Spacer()
                 .onTapGesture {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -35,7 +35,7 @@ struct HowToPlayView: View {
                     }
                     
                     // Instructions
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 16) {
                         InstructionRow(
                             icon: "target",
                             title: "Objective",
@@ -60,12 +60,15 @@ struct HowToPlayView: View {
                             description: "5 wrong guesses and you're out"
                         )
                     }
+                    .padding(.top, 8)
+                    
+                    Spacer()
+                        .frame(height: 50)
                 }
                 .padding(24)
                 .frame(maxWidth: .infinity)
                 .background(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(colorScheme == .dark ? Color(white: 0.12) : Color.white)
+                    AppTheme.liquidGlass(for: colorScheme)
                         .ignoresSafeArea(edges: .bottom)
                 )
         }

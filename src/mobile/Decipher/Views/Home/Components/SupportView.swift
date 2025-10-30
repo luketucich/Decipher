@@ -5,7 +5,7 @@ struct SupportView: View {
     @Binding var isPresented: Bool
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Spacer()
                 .onTapGesture {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -72,7 +72,7 @@ struct SupportView: View {
                                 )
                             )
                             .cornerRadius(12)
-                            .shadow(color: AppTheme.primary.opacity(0.3), radius: 8, x: 0, y: 3)
+                            .shadow(color: AppTheme.primary.opacity(0.4), radius: 10, x: 0, y: 4)
                         }
                     }
                     
@@ -82,8 +82,7 @@ struct SupportView: View {
                 .padding(24)
                 .frame(maxWidth: .infinity)
                 .background(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(colorScheme == .dark ? Color(white: 0.12) : Color.white)
+                    AppTheme.liquidGlass(for: colorScheme)
                         .ignoresSafeArea(edges: .bottom)
                 )
         }

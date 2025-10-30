@@ -1,6 +1,9 @@
 import { type Request, type Response } from "express";
 import { createSubmission } from "../repositories/submissionRepository.js";
-import { getTopicByDate } from "../repositories/topicRepository.js";
+import {
+  getTopicByDate,
+  getTopicNumber,
+} from "../repositories/topicRepository.js";
 
 export const getDaily = async (req: Request, res: Response) => {
   try {
@@ -11,7 +14,9 @@ export const getDaily = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "No topic found for today" });
     }
 
-    return res.status(200).json(topic);
+    const topicNumber = await getTopicNumber(new Date(today));
+
+    return res.status(200).json({ ...topic, topicNumber });
   } catch (error) {
     console.error("Error fetching daily topic:", error);
     return res.status(500).json({ message: "Internal server error" });

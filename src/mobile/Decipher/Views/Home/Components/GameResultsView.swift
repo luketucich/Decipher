@@ -47,7 +47,7 @@ struct GameResultsView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Spacer()
                 .onTapGesture {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -81,7 +81,7 @@ struct GameResultsView: View {
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(AppTheme.textColor(for: colorScheme))
                     
-                    HStack(spacing: 32) {
+                    HStack(spacing: 40) {
                         StatItem(
                             icon: "target",
                             label: "Attempts",
@@ -125,6 +125,7 @@ struct GameResultsView: View {
                         )
                     )
                     .cornerRadius(12)
+                    .shadow(color: AppTheme.primary.opacity(0.4), radius: 12, x: 0, y: 4)
                 }
                 
                 Spacer()
@@ -133,8 +134,7 @@ struct GameResultsView: View {
             .padding(24)
             .frame(maxWidth: .infinity)
             .background(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(colorScheme == .dark ? Color(white: 0.12) : Color.white)
+                AppTheme.liquidGlass(for: colorScheme)
                     .ignoresSafeArea(edges: .bottom)
             )
         }

@@ -2,6 +2,17 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+export async function getTopicNumber(date: Date) {
+  const count = await prisma.topic.count({
+    where: {
+      date: {
+        lte: date,
+      },
+    },
+  });
+  return count;
+}
+
 export async function getTopicByDate(date: Date) {
   return prisma.topic.findUnique({
     where: { date },

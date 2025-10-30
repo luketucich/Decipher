@@ -101,6 +101,18 @@ struct ProgressSegment: View {
                     )
                 )
                 .frame(height: 6)
+                .shadow(
+                    color: isFuture 
+                        ? Color.clear 
+                        : (gameState == .won 
+                            ? AppTheme.success.opacity(0.4)
+                            : (gameState == .lost || failedAttempts.contains(hintOrder)
+                                ? AppTheme.failure.opacity(0.3)
+                                : AppTheme.primary.opacity(0.3))),
+                    radius: popAnimation ? 6 : 3,
+                    x: 0,
+                    y: 2
+                )
                 .scaleEffect(
                     x: popAnimation ? 1.15 : 1.0,
                     y: popAnimation ? 1.5 : 1.0

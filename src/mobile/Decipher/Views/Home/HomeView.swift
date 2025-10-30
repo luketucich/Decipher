@@ -61,9 +61,9 @@ struct HomeView: View {
                                 )
                             )
                             .cornerRadius(16)
-                            .shadow(color: AppTheme.primary.opacity(0.4), radius: buttonPressed ? 10 : 20, x: 0, y: buttonPressed ? 4 : 8)
+                            .shadow(color: AppTheme.primary.opacity(buttonPressed ? 0.5 : 0.4), radius: buttonPressed ? 10 : 20, x: 0, y: buttonPressed ? 4 : 8)
                     }
-                    .scaleEffect(buttonPressed ? 0.95 : 1.0)
+                    .scaleEffect(buttonPressed ? 0.97 : 1.0)
                     .padding(.horizontal, 32)
                     
                     // Bottom buttons
@@ -86,8 +86,36 @@ struct HomeView: View {
                             .padding(.vertical, 14)
                             .padding(.horizontal, 20)
                             .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(AppTheme.primary.opacity(0.12))
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(colorScheme == .dark ? .ultraThinMaterial : .thinMaterial)
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [
+                                                    colorScheme == .dark
+                                                        ? AppTheme.primary.opacity(0.15)
+                                                        : AppTheme.primary.opacity(0.08),
+                                                    colorScheme == .dark
+                                                        ? AppTheme.primary.opacity(0.05)
+                                                        : AppTheme.primary.opacity(0.03)
+                                                ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .strokeBorder(
+                                            LinearGradient(
+                                                colors: colorScheme == .dark 
+                                                    ? [Color.white.opacity(0.15), Color.white.opacity(0.08)]
+                                                    : [Color.black.opacity(0.15), Color.black.opacity(0.08)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 1.5
+                                        )
+                                }
                             )
                         }
                         
@@ -109,8 +137,36 @@ struct HomeView: View {
                             .padding(.vertical, 14)
                             .padding(.horizontal, 20)
                             .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(AppTheme.primary.opacity(0.12))
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(colorScheme == .dark ? .ultraThinMaterial : .thinMaterial)
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [
+                                                    colorScheme == .dark
+                                                        ? AppTheme.primary.opacity(0.15)
+                                                        : AppTheme.primary.opacity(0.08),
+                                                    colorScheme == .dark
+                                                        ? AppTheme.primary.opacity(0.05)
+                                                        : AppTheme.primary.opacity(0.03)
+                                                ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .strokeBorder(
+                                            LinearGradient(
+                                                colors: colorScheme == .dark 
+                                                    ? [Color.white.opacity(0.15), Color.white.opacity(0.08)]
+                                                    : [Color.black.opacity(0.15), Color.black.opacity(0.08)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 1.5
+                                        )
+                                }
                             )
                         }
                     }

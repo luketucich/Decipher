@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node ./dist/app.js",
     "topic": "tsx ./src/server/scripts/generateTopics.ts",
-    "match": "tsx ./src/server/utils/guessMatcher.ts"
+    "match": "tsx ./src/server/utils/guessMatcher.ts",
+    "play": "tsx ./src/server/scripts/exampleGame.ts"
   },
   "repository": {
     "type": "git",

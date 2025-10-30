@@ -8,25 +8,32 @@
 import SwiftUI
 
 struct ContentView: View {
-    // Hardcoded data for testing (change later)
-    let topicNumber = 1
-    let topicType = "Historical Figure"
-    let hint1 = "Famous Scientist"
-    
-    // For the input field
-    @State private var userGuess: String = ""
+    @State private var viewModel = PlayViewModel()
     
     var body: some View {
-        VStack {
-            Text("Daily Decipher #\(topicNumber)")
-                .padding(10)
-            Text(topicType)
-                .padding(10)
-            Text("[Hint #1 Here")
-                .padding(10)
-            TextField("(input answer)", text: $userGuess)
-                .padding(10)
+        VStack(alignment: .leading, spacing: 20) {
+            if viewModel.isLoading {
+                Text("Loading...")
+            } else if let error = viewModel.errorMessage {
+                Text("Error: \(error)")
+            } else if let topic = viewModel.topic {
+                Text("Daily Decipher #1")  // Placeholder; calculate later
+                Text(topic.type)
+                
+                if let firstHint = topic.hints.first(where: { $0.order == 1 }) {
+                    Text("[Hint #1 Here] \(firstHint.content)")
+                }
+                
+                TextField("(input answer)", text: $viewModel.userGuess)
+                
+                Button("Submit") {
+                    print("Guess: \(viewModel.userGuess)")
+                }
+                
+                Spacer()
+            }
         }
+        .padding()
     }
 }
 

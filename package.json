@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
-    "prestart": "npm run build && prisma migrate deploy",
+    "prestart": "prisma migrate deploy",
     "start": "node ./dist/app.js",
     "postinstall": "prisma generate",
     "topic": "tsx ./src/server/scripts/generateTopics.ts",

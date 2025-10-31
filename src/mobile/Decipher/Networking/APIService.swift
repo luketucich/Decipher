@@ -4,7 +4,12 @@ class APIService {
     private var baseURL = "https://decipher-wdx2.onrender.com"
     
     func fetchDailyTopic() async throws -> Topic {
-        let url = URL(string: "\(baseURL)/play/daily")!
+        // Get client's local date in YYYY-MM-DD format
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let localDate = formatter.string(from: Date())
+        
+        let url = URL(string: "\(baseURL)/play/daily?date=\(localDate)")!
         let (data, response) = try await URLSession.shared.data(from: url)
         
         guard let httpResponse = response as? HTTPURLResponse,

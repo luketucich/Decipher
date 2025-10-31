@@ -43,4 +43,16 @@ class APIService {
             throw URLError(.badServerResponse)
         }
     }
+    
+    func fetchGameStats(topicId: String) async throws -> GameStats {
+        let url = URL(string: "\(baseURL)/play/stats/\(topicId)")!
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+        
+        return try JSONDecoder().decode(GameStats.self, from: data)
+    }
 }

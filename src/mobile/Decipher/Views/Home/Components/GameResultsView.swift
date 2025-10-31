@@ -5,6 +5,10 @@ struct GameResultsView: View {
     @Binding var isPresented: Bool
     let result: GameResult
     
+    @State private var gameStats: GameStats?
+    @State private var isLoadingStats = true
+    private let apiService = APIService()
+    
     private var formattedDuration: String {
         let minutes = result.duration / 60
         let seconds = result.duration % 60
@@ -106,6 +110,15 @@ struct GameResultsView: View {
                     .padding(.top, 8)
                 }
                 
+                // Divider
+                Rectangle()
+                    .fill(AppTheme.secondaryTextColor(for: colorScheme).opacity(0.2))
+                    .frame(height: 1)
+                    .padding(.vertical, 8)
+                
+                // Game Stats Section
+                GameStatsView(stats: gameStats, isLoading: isLoadingStats)
+                
                 // Share Button
                 Button(action: shareResults) {
                     HStack(spacing: 8) {
@@ -139,6 +152,9 @@ struct GameResultsView: View {
             )
         }
         .ignoresSafeArea(edges: .bottom)
+        .task {
+            await fetchGameStats()
+        }
     }
     
     private func circleColor(for index: Int) -> Color {
@@ -152,6 +168,23 @@ struct GameResultsView: View {
             }
         } else {
             return AppTheme.failure
+        }
+    }
+    
+    private func fetchGameStats() async {
+        do {
+            let stats = try await apiService.fetchGameStats(topicId: result.topicId)
+            await MainActor.run {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    self.gameStats = stats
+                    self.isLoadingStats = false
+                }
+            }
+        } catch {
+            print("Error fetching game stats: \(error)")
+            await MainActor.run {
+                self.isLoadingStats = false
+            }
         }
     }
     

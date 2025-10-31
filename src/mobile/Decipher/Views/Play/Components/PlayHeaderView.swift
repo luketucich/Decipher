@@ -74,16 +74,16 @@ struct ProgressSegment: View {
     
     private var gradientColors: [Color] {
         if gameState == .won {
-            return [AppTheme.successVariant, AppTheme.success]
+            return [AppTheme.successVariant, AppTheme.successColor(for: colorScheme)]
         } else if gameState == .lost {
-            return [AppTheme.failureVariant, AppTheme.failure]
+            return [AppTheme.failureVariant, AppTheme.failureColor(for: colorScheme)]
         } else if isFuture {
             return [
                 AppTheme.unfilledProgressColor(for: colorScheme),
                 AppTheme.unfilledProgressColor(for: colorScheme)
             ]
         } else if failedAttempts.contains(hintOrder) {
-            return [AppTheme.failureVariant, AppTheme.failure]
+            return [AppTheme.failureVariant, AppTheme.failureColor(for: colorScheme)]
         } else {
             return [AppTheme.primaryVariant, AppTheme.primary]
         }
@@ -105,9 +105,9 @@ struct ProgressSegment: View {
                     color: isFuture 
                         ? Color.clear 
                         : (gameState == .won 
-                            ? AppTheme.success.opacity(0.4)
+                            ? AppTheme.successColor(for: colorScheme).opacity(0.4)
                             : (gameState == .lost || failedAttempts.contains(hintOrder)
-                                ? AppTheme.failure.opacity(0.3)
+                                ? AppTheme.failureColor(for: colorScheme).opacity(0.3)
                                 : AppTheme.primary.opacity(0.3))),
                     radius: popAnimation ? 6 : 3,
                     x: 0,

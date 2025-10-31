@@ -30,9 +30,11 @@ struct AppTheme {
     // Success colors - vibrant green with purple undertones
     static let success = Color(red: 0.00, green: 0.90, blue: 0.60)
     static let successVariant = Color(red: 0.00, green: 0.80, blue: 0.50)
+    static let successLight = Color(red: 0.00, green: 0.70, blue: 0.45) // Darker for light mode
     // Failure colors - vibrant red with purple undertones
     static let failure = Color(red: 1.00, green: 0.20, blue: 0.50)
     static let failureVariant = Color(red: 0.90, green: 0.10, blue: 0.40)
+    static let failureLight = Color(red: 0.80, green: 0.15, blue: 0.40) // Darker for light mode
     
     // MARK: - Opacities
     struct Opacity {
@@ -122,6 +124,14 @@ struct AppTheme {
     
     static func hintTypeColor() -> Color {
         primary.opacity(Opacity.hintType)
+    }
+    
+    static func successColor(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? success : successLight
+    }
+    
+    static func failureColor(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? failure : failureLight
     }
     
     // Stepped font sizing every ~5 characters, capped at 52 max and 24 min

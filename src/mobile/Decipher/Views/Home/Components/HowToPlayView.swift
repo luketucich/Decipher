@@ -28,9 +28,9 @@ struct HowToPlayView: View {
                                 isPresented = false
                             }
                         }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 24))
-                                .foregroundColor(AppTheme.secondaryTextColor(for: colorScheme))
+                            Text("✕")
+                                .font(.system(size: 24, weight: .medium))
+                                .foregroundColor(AppTheme.primary)
                         }
                     }
                     

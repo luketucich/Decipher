@@ -84,7 +84,7 @@ struct HomeView: View {
                             }
                             .foregroundColor(AppTheme.primary)
                             .padding(.vertical, 14)
-                            .padding(.horizontal, 20)
+                            .frame(maxWidth: .infinity)
                             .background(
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 12)
@@ -135,7 +135,7 @@ struct HomeView: View {
                             }
                             .foregroundColor(AppTheme.primary)
                             .padding(.vertical, 14)
-                            .padding(.horizontal, 20)
+                            .frame(maxWidth: .infinity)
                             .background(
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 12)
@@ -170,7 +170,8 @@ struct HomeView: View {
                             )
                         }
                     }
-                    .padding(.top, 20)
+                    .padding(.horizontal, 32)
+                    .padding(.top, 16)
                     
                     // Support button (smaller, less prominent)
                     Button(action: {

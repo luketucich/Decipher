@@ -18,10 +18,10 @@ struct MatrixRainView: View {
                     VStack(spacing: 4) {
                         ForEach(0..<drop.characters.count, id: \.self) { index in
                             Text(drop.characters[index])
-                                .font(.system(size: 14, weight: .medium, design: .monospaced))
+                                .font(.system(size: 16, weight: .medium, design: .monospaced))
                                 .foregroundColor(
                                     AppTheme.primary.opacity(
-                                        index == 0 ? 1.0 : max(0.05, Double(drop.characters.count - index) / Double(drop.characters.count) * 0.4)
+                                        index == 0 ? 1.0 : max(0.15, Double(drop.characters.count - index) / Double(drop.characters.count) * 0.55)
                                     )
                                 )
                         }

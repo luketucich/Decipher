@@ -1,71 +1,44 @@
 import SwiftUI
 
+struct WordPlacement {
+    let word: String
+    let count: Int
+    let position: CGPoint
+    let size: CGFloat
+    let weight: Font.Weight
+    let opacity: Double
+    let bounds: CGRect
+}
+
 struct WordCloudView: View {
     let guesses: [GuessCount]
     @Environment(\.colorScheme) var colorScheme
-    @State private var appeared = false
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
+    @State private var recenterTimer: Timer?
+    @State private var placedWords: [WordPlacement] = []
+    @State private var hasAppeared = false
     
-    // Limit to top 20 words for optimal display
+    private let minZoom: CGFloat = 0.8
+    private let maxZoom: CGFloat = 2.0
+    private let recenterDelay: TimeInterval = 0.4
+    
+    // Include all unique guesses (GuessCount already has unique guesses with count)
     private var displayGuesses: [GuessCount] {
-        Array(guesses.prefix(20))
-    }
-    
-    // Calculate font size with dramatic scaling - most common words MUCH larger
-    private func fontSize(for index: Int, count: Int, maxCount: Int) -> CGFloat {
-        let normalizedFrequency = Double(count) / Double(maxCount)
-        // More aggressive exponential scaling for greater disparity
-        let exponentialFrequency = pow(normalizedFrequency, 0.4)
-        let minSize: CGFloat = 10
-        let maxSize: CGFloat = 40
-        let size = minSize + CGFloat(exponentialFrequency) * (maxSize - minSize)
-        return max(minSize, min(maxSize, size))
-    }
-    
-    // Calculate font weight based on frequency
-    private func fontWeight(for index: Int, count: Int, maxCount: Int) -> Font.Weight {
-        let normalizedFrequency = Double(count) / Double(maxCount)
-        if normalizedFrequency > 0.8 {
-            return .black
-        } else if normalizedFrequency > 0.6 {
-            return .heavy
-        } else if normalizedFrequency > 0.4 {
-            return .bold
-        } else if normalizedFrequency > 0.2 {
-            return .semibold
-        } else {
-            return .medium
-        }
-    }
-    
-    // Assign colors with variety - cycling through theme colors
-    private func wordColor(for index: Int) -> Color {
-        let colors = [
-            AppTheme.primary,
-            AppTheme.purple1,
-            AppTheme.pink,
-            AppTheme.purple2,
-            AppTheme.pink2,
-            AppTheme.primaryVariant,
-            AppTheme.purple3,
-            AppTheme.pinkVariant,
-            AppTheme.success,
-            AppTheme.teal
-        ]
-        return colors[index % colors.count]
-    }
-    
-    // Calculate opacity based on frequency
-    private func opacity(for index: Int, count: Int, maxCount: Int) -> Double {
-        let normalizedFrequency = Double(count) / Double(maxCount)
-        return 0.7 + (normalizedFrequency * 0.3) // Range: 0.7 to 1.0
+        // GuessCount already represents unique guesses with their counts
+        // No need to filter for duplicates
+        guesses
     }
     
     var body: some View {
         VStack(spacing: 8) {
             Text("Common Guesses")
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 16, weight: .bold))
                 .foregroundColor(AppTheme.primary)
                 .frame(maxWidth: .infinity, alignment: .center)
+                .opacity(hasAppeared ? 1.0 : 0.0)
             
             if displayGuesses.isEmpty {
                 Text("No guesses yet")
@@ -74,163 +47,246 @@ struct WordCloudView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 24)
             } else {
-                CenteredWordCloudLayout(spacing: 6) {
-                    ForEach(Array(displayGuesses.enumerated()), id: \.element.id) { index, guessCount in
-                        let maxCount = displayGuesses.first?.count ?? 1
-                        
-                        Text(guessCount.guess)
-                            .font(.system(
-                                size: fontSize(for: index, count: guessCount.count, maxCount: maxCount),
-                                weight: fontWeight(for: index, count: guessCount.count, maxCount: maxCount)
-                            ))
-                            .foregroundColor(wordColor(for: index))
-                            .opacity(opacity(for: index, count: guessCount.count, maxCount: maxCount))
-                            .scaleEffect(appeared ? 1 : 0.3)
-                            .animation(
-                                .spring(response: 0.5, dampingFraction: 0.7)
-                                    .delay(Double(index) * 0.03),
-                                value: appeared
-                            )
+                GeometryReader { geometry in
+                    ZStack {
+                        ForEach(Array(placedWords.enumerated()), id: \.offset) { index, word in
+                            Text(word.word)
+                                .font(.system(size: word.size, weight: word.weight))
+                                .foregroundColor(AppTheme.textColor(for: colorScheme))
+                                .opacity(word.opacity)
+                                .position(word.position)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scaleEffect(scale)
+                    .offset(offset)
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged { value in
+                                scale = lastScale * value
+                            }
+                            .onEnded { value in
+                                let finalScale = lastScale * value
+                                
+                                if finalScale < minZoom {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        scale = minZoom
+                                        lastScale = minZoom
+                                    }
+                                } else if finalScale > maxZoom {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        scale = maxZoom
+                                        lastScale = maxZoom
+                                    }
+                                } else {
+                                    scale = finalScale
+                                    lastScale = finalScale
+                                }
+                            }
+                    )
+                    .simultaneousGesture(
+                        DragGesture()
+                            .onChanged { value in
+                                offset = CGSize(
+                                    width: lastOffset.width + value.translation.width,
+                                    height: lastOffset.height + value.translation.height
+                                )
+                                startRecenterTimer()
+                            }
+                            .onEnded { _ in
+                                lastOffset = offset
+                            }
+                    )
+                    .clipped()
+                    .onAppear {
+                        layoutWords(in: geometry.size)
+                        // Trigger zoom-in to zoom-out animation
+                        if !hasAppeared {
+                            // Start zoomed in
+                            scale = 1.5
+                            lastScale = 1.5
+                            
+                            // Quick zoom out to normal with spring
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                withAnimation(.spring(response: 0.55, dampingFraction: 0.68)) {
+                                    scale = 1.0
+                                    lastScale = 1.0
+                                    hasAppeared = true
+                                }
+                            }
+                        }
+                    }
+                    .onChange(of: geometry.size) { _, newSize in
+                        layoutWords(in: newSize)
                     }
                 }
-                .padding(.vertical, 8)
+                .frame(height: 132)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
-        .padding(12)
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: 12)
                 .fill(AppTheme.inputBackground(for: colorScheme))
+                .shadow(
+                    color: colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.08),
+                    radius: 8,
+                    x: 0,
+                    y: 2
+                )
         )
         .onAppear {
-            appeared = true
-        }
-    }
-}
-
-// Centered word cloud layout - largest words in center, smaller words around edges
-struct CenteredWordCloudLayout: Layout {
-    var spacing: CGFloat
-    
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let result = computeLayout(
-            in: proposal.replacingUnspecifiedDimensions().width,
-            subviews: subviews
-        )
-        return result.size
-    }
-    
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let result = computeLayout(
-            in: bounds.width,
-            subviews: subviews
-        )
-        for (index, subview) in subviews.enumerated() {
-            subview.place(
-                at: CGPoint(
-                    x: bounds.minX + result.positions[index].x,
-                    y: bounds.minY + result.positions[index].y
-                ),
-                proposal: .unspecified
-            )
+            // Initial state will be set in geometry reader's onAppear
         }
     }
     
-    private func computeLayout(in maxWidth: CGFloat, subviews: Subviews) -> (size: CGSize, positions: [CGPoint]) {
-        guard !subviews.isEmpty else { return (CGSize.zero, []) }
+    private func startRecenterTimer() {
+        recenterTimer?.invalidate()
+        recenterTimer = Timer.scheduledTimer(withTimeInterval: recenterDelay, repeats: false) { _ in
+            withAnimation(.spring(response: 0.8, dampingFraction: 0.85)) {
+                offset = .zero
+                lastOffset = .zero
+            }
+        }
+    }
+    
+    // D3-cloud inspired layout algorithm
+    private func layoutWords(in containerSize: CGSize) {
+        guard !displayGuesses.isEmpty else {
+            placedWords = []
+            return
+        }
         
-        let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
-        var positions: [CGPoint] = []
+        let centerX = containerSize.width / 2
+        let centerY = containerSize.height / 2
+        var placed: [WordPlacement] = []
         
-        // Calculate word priorities (size = importance)
-        let wordSizes = sizes.map { $0.width * $0.height }
-        let maxWordSize = wordSizes.max() ?? 1
+        // Sort by count descending (most common first)
+        let sortedGuesses = displayGuesses.sorted { $0.count > $1.count }
+        let maxCount = sortedGuesses.first?.count ?? 1
         
-        var placedRects: [CGRect] = []
-        let centerX = maxWidth / 2
-        
-        // Estimate height based on content
-        let avgHeight: CGFloat = sizes.reduce(0) { $0 + $1.height } / CGFloat(sizes.count)
-        let estimatedHeight = avgHeight * 5
-        let centerY = estimatedHeight / 2
-        
-        for (index, size) in sizes.enumerated() {
-            let wordSize = wordSizes[index]
-            let priority = wordSize / maxWordSize
+        for (_, guess) in sortedGuesses.enumerated() {
+            let normalizedFreq = Double(guess.count) / Double(maxCount)
+            let size = calculateWordSize(frequency: normalizedFreq)
+            let weight = calculateWordWeight(frequency: normalizedFreq)
+            let opacity = calculateWordOpacity(frequency: normalizedFreq)
             
-            var bestPosition: CGPoint?
-            var bestScore: CGFloat = .infinity
+            // Estimate text bounds (approximation)
+            let estimatedWidth = CGFloat(guess.guess.count) * size * 0.55
+            let estimatedHeight = size * 1.3
             
-            // Try positions starting from center
-            for attempt in 0..<200 {
-                // Radius grows based on attempt, but larger words stay closer to center
-                let baseRadius = CGFloat(attempt) * 4.5
-                let priorityFactor = 1.0 - (priority * 0.6) // Higher priority = smaller factor = stays closer
-                let radius = baseRadius * priorityFactor
-                
-                // Random angle for more organic placement
-                let angle = Double.random(in: 0...(2 * .pi))
-                
-                let offsetX = cos(angle) * radius
-                let offsetY = sin(angle) * radius * 0.75 // Slightly flatten vertically
-                
-                let candidateX = centerX - (size.width / 2) + offsetX
-                let candidateY = centerY - (size.height / 2) + offsetY
-                
-                // Keep within bounds
-                let clampedX = max(spacing, min(candidateX, maxWidth - size.width - spacing))
-                let clampedY = max(spacing, candidateY)
-                
-                let candidateRect = CGRect(
-                    x: clampedX - spacing/2,
-                    y: clampedY - spacing/2,
-                    width: size.width + spacing,
-                    height: size.height + spacing
+            // Find position using spiral search
+            if let position = findPosition(
+                width: estimatedWidth,
+                height: estimatedHeight,
+                centerX: centerX,
+                centerY: centerY,
+                placed: placed,
+                containerSize: containerSize
+            ) {
+                let bounds = CGRect(
+                    x: position.x - estimatedWidth / 2,
+                    y: position.y - estimatedHeight / 2,
+                    width: estimatedWidth,
+                    height: estimatedHeight
                 )
                 
-                // Check for collisions
-                if !placedRects.contains(where: { $0.intersects(candidateRect) }) {
-                    // Score based on distance from center - prefer center for large words
-                    let distanceFromCenter = sqrt(pow(clampedX + size.width / 2 - centerX, 2) + pow(clampedY + size.height / 2 - centerY, 2))
-                    let score = distanceFromCenter / (priority + 0.1) // Divide by priority to favor center for important words
-                    
-                    if score < bestScore {
-                        bestScore = score
-                        bestPosition = CGPoint(x: clampedX, y: clampedY)
-                    }
-                    
-                    // Accept quickly for high priority words near center
-                    if priority > 0.7 && distanceFromCenter < 80 {
-                        break
-                    }
-                    
-                    // Accept after checking enough positions
-                    if attempt > 120 && bestPosition != nil {
-                        break
-                    }
+                let placement = WordPlacement(
+                    word: guess.guess,
+                    count: guess.count,
+                    position: position,
+                    size: size,
+                    weight: weight,
+                    opacity: opacity,
+                    bounds: bounds
+                )
+                placed.append(placement)
+            }
+        }
+        
+        placedWords = placed
+    }
+    
+    // Archimedean spiral search for non-overlapping position
+    private func findPosition(
+        width: CGFloat,
+        height: CGFloat,
+        centerX: CGFloat,
+        centerY: CGFloat,
+        placed: [WordPlacement],
+        containerSize: CGSize
+    ) -> CGPoint? {
+        let maxAttempts = 500
+        let spiralStep: CGFloat = 2.0
+        
+        for attempt in 0..<maxAttempts {
+            let t = Double(attempt) * 0.1
+            let angle = t
+            let radius = spiralStep * t
+            
+            // Favor horizontal spread by scaling x-axis more
+            let x = centerX + CGFloat(cos(angle) * radius * 1.4)
+            let y = centerY + CGFloat(sin(angle) * radius * 0.7)
+            
+            let testBounds = CGRect(
+                x: x - width / 2,
+                y: y - height / 2,
+                width: width,
+                height: height
+            )
+            
+            // Check if in bounds
+            guard testBounds.minX >= 0 && testBounds.maxX <= containerSize.width &&
+                  testBounds.minY >= 0 && testBounds.maxY <= containerSize.height else {
+                continue
+            }
+            
+            // Check for collisions with placed words
+            var hasCollision = false
+            for placedWord in placed {
+                if testBounds.intersects(placedWord.bounds) {
+                    hasCollision = true
+                    break
                 }
             }
             
-            // Use best found position or fallback
-            let finalPosition = bestPosition ?? CGPoint(x: spacing, y: CGFloat(index) * 40)
-            positions.append(finalPosition)
-            placedRects.append(CGRect(
-                x: finalPosition.x - spacing/2,
-                y: finalPosition.y - spacing/2,
-                width: size.width + spacing,
-                height: size.height + spacing
-            ))
+            if !hasCollision {
+                return CGPoint(x: x, y: y)
+            }
         }
         
-        // Calculate final bounds
-        let minY = placedRects.map { $0.minY }.min() ?? 0
-        let maxY = placedRects.map { $0.maxY }.max() ?? 100
-        let height = maxY - minY + spacing * 2
-        
-        // Adjust positions to remove top padding
-        for i in 0..<positions.count {
-            positions[i].y -= minY - spacing
+        return nil
+    }
+    
+    private func calculateWordSize(frequency: Double) -> CGFloat {
+        // Balanced size variation
+        let exponentialFrequency = pow(frequency, 0.4)
+        let minSize: CGFloat = 14
+        let maxSize: CGFloat = 32
+        return minSize + CGFloat(exponentialFrequency) * (maxSize - minSize)
+    }
+    
+    private func calculateWordWeight(frequency: Double) -> Font.Weight {
+        // Dramatic weight variation for visual interest
+        if frequency > 0.9 {
+            return .black
+        } else if frequency > 0.75 {
+            return .heavy
+        } else if frequency > 0.6 {
+            return .bold
+        } else if frequency > 0.45 {
+            return .semibold
+        } else if frequency > 0.3 {
+            return .medium
+        } else if frequency > 0.15 {
+            return .regular
+        } else {
+            return .light
         }
-        
-        return (CGSize(width: maxWidth, height: height), positions)
+    }
+    
+    private func calculateWordOpacity(frequency: Double) -> Double {
+        // Smooth opacity variation - more visible overall
+        return 0.5 + (pow(frequency, 0.5) * 0.5)
     }
 }

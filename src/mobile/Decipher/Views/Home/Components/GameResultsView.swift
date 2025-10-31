@@ -24,7 +24,7 @@ struct GameResultsView: View {
     }
     
     private var statusColor: Color {
-        result.success ? AppTheme.success : AppTheme.failure
+        result.success ? AppTheme.successColor(for: colorScheme) : AppTheme.failureColor(for: colorScheme)
     }
     
     private var shareText: String {
@@ -70,9 +70,9 @@ struct GameResultsView: View {
                             isPresented = false
                         }
                     }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 22))
-                            .foregroundColor(AppTheme.secondaryTextColor(for: colorScheme))
+                        Text("✕")
+                            .font(.system(size: 24, weight: .medium))
+                            .foregroundColor(AppTheme.primary)
                     }
                 }
                 
@@ -99,16 +99,6 @@ struct GameResultsView: View {
                             value: formattedDuration
                         )
                     }
-                    
-                    // Visual progress
-                    HStack(spacing: 6) {
-                        ForEach(1...5, id: \.self) { index in
-                            Circle()
-                                .fill(circleColor(for: index))
-                                .frame(width: 28, height: 28)
-                        }
-                    }
-                    .padding(.top, 4)
                 }
                 
                 // Stats Toggle Button
@@ -137,13 +127,6 @@ struct GameResultsView: View {
                     .background(
                         RoundedRectangle(cornerRadius: 10)
                             .fill(AppTheme.inputBackground(for: colorScheme))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .strokeBorder(
-                                AppTheme.secondaryTextColor(for: colorScheme).opacity(0.3),
-                                lineWidth: 1.5
-                            )
                     )
                 }
                 
@@ -197,14 +180,14 @@ struct GameResultsView: View {
     private func circleColor(for index: Int) -> Color {
         if result.success {
             if index == result.attempts {
-                return AppTheme.success
+                return AppTheme.successColor(for: colorScheme)
             } else if index < result.attempts {
-                return AppTheme.failure
+                return AppTheme.failureColor(for: colorScheme)
             } else {
                 return Color.gray.opacity(0.3)
             }
         } else {
-            return AppTheme.failure
+            return AppTheme.failureColor(for: colorScheme)
         }
     }
     

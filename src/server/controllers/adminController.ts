@@ -1,6 +1,11 @@
 import { type Request, type Response } from "express";
 import { createTopic as createTopicRepo } from "../repositories/topicRepository.js";
 
+/**
+ * POST /admin/topic
+ * Creates a new daily topic with hints (admin only).
+ * Requires admin authentication via x-admin-token header or Bearer token.
+ */
 export const createTopic = async (req: Request, res: Response) => {
   const { answer, date, type, hints } = req.body;
 

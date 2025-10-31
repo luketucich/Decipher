@@ -1,5 +1,10 @@
 import { type NextFunction, type Request, type Response } from "express";
 
+/**
+ * Admin authentication middleware.
+ * Validates admin token from x-admin-token header or Authorization Bearer token.
+ */
+
 const HEADER_NAME = "x-admin-token";
 
 export default function adminAuth(req: Request, res: Response, next: NextFunction) {

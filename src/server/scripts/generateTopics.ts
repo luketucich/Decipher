@@ -4,6 +4,9 @@ import { getAllTopics } from "../repositories/topicRepository.js";
 
 dotenv.config();
 
+const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:3000";
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+
 const openai = new OpenAI({
   apiKey: process.env.XAI_API_KEY,
   baseURL: "https://api.x.ai/v1",
@@ -78,9 +81,12 @@ async function generateTopic(
 
   generated.date = date;
 
-  const postResponse = await fetch("http://localhost:3000/admin/topic", {
+  const postResponse = await fetch(`${API_BASE_URL}/admin/topic`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-admin-token": ADMIN_TOKEN ?? "",
+    },
     body: JSON.stringify(generated),
   });
 
@@ -115,7 +121,6 @@ const generateTopics = async (amount: number) => {
       console.error(`Error generating topic for ${dateStr}:`, error);
     }
 
-    date = new Date(date.getTime() + 24 * 60 * 60 * 1000); // Move to next day
   }
 };
 

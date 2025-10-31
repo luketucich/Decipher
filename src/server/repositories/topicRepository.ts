@@ -1,5 +1,9 @@
 import { prisma } from "../db/prisma.js";
 
+/**
+ * Gets the topic number for a given date (i.e., how many topics exist up to and including this date).
+ * Used to display "Decipher #123" to users.
+ */
 export async function getTopicNumber(date: Date) {
   const count = await prisma.topic.count({
     where: {
@@ -11,6 +15,9 @@ export async function getTopicNumber(date: Date) {
   return count;
 }
 
+/**
+ * Fetches a topic by its date, including all hints ordered by hint order.
+ */
 export async function getTopicByDate(date: Date) {
   return prisma.topic.findUnique({
     where: { date },
@@ -18,6 +25,10 @@ export async function getTopicByDate(date: Date) {
   });
 }
 
+/**
+ * Fetches all topics (answer, type, date only) ordered by most recent first.
+ * Used by topic generation script to avoid duplicates.
+ */
 export async function getAllTopics() {
   return prisma.topic.findMany({
     select: { answer: true, type: true, date: true },
@@ -25,6 +36,9 @@ export async function getAllTopics() {
   });
 }
 
+/**
+ * Creates a new topic with its associated hints.
+ */
 export async function createTopic(data: {
   answer: string;
   date: Date;

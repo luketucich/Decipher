@@ -5,13 +5,17 @@ import {
   getTopicNumber,
 } from "../repositories/topicRepository.js";
 
+/**
+ * GET /play/daily
+ * Fetches today's daily topic with hints ordered by hint order.
+ */
 export const getDaily = async (req: Request, res: Response) => {
   try {
     const today = new Date().toISOString().split("T")[0]!; // Get YYYY-MM-DD format
     const topic = await getTopicByDate(new Date(today));
 
     if (!topic) {
-      return res.status(404).json({ message: "No topic found for today" });
+      return res.status(404).json({ error: "No topic found for today" });
     }
 
     const topicNumber = await getTopicNumber(new Date(today));
@@ -19,10 +23,14 @@ export const getDaily = async (req: Request, res: Response) => {
     return res.status(200).json({ ...topic, topicNumber });
   } catch (error) {
     console.error("Error fetching daily topic:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
+/**
+ * POST /play/submit
+ * Submits a completed game result (win or loss).
+ */
 export const submitGame = async (req: Request, res: Response) => {
   const { topicId, attempts, guesses, duration, success } = req.body;
 

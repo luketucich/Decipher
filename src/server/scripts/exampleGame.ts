@@ -1,6 +1,8 @@
 import { getTopicByDate } from "../repositories/topicRepository.js";
 import isCorrectGuess from "../utils/guessMatcher.js";
 
+const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:3000";
+
 const submitGame = async (
   topicId: string,
   attempts: number,
@@ -8,7 +10,7 @@ const submitGame = async (
   duration: number,
   success: boolean
 ) => {
-  const response = await fetch("http://localhost:3000/play/submit", {
+  const response = await fetch(`${API_BASE_URL}/play/submit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ topicId, attempts, guesses, duration, success }),
@@ -23,7 +25,6 @@ const submitGame = async (
 const playExampleGame = async () => {
   let date = new Date();
   date.setUTCHours(0, 0, 0, 0); // Normalize to midnight
-  date.toISOString().split("T")[0]!; // YYYY-MM-DD
 
   const dailyTopic = await getTopicByDate(date);
   const hints = dailyTopic?.hints.map((hint) => hint.content) || [];

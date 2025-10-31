@@ -1,5 +1,12 @@
 import { distance } from "fastest-levenshtein";
 
+/**
+ * Normalizes a string for comparison by:
+ * - Converting to lowercase
+ * - Removing articles (the, a, an)
+ * - Removing punctuation and symbols
+ * - Collapsing multiple spaces
+ */
 function normalize(str: string): string {
   str = str.toLowerCase();
   // Remove articles, punctuation/symbols, extra spaces
@@ -11,6 +18,12 @@ function normalize(str: string): string {
   return str;
 }
 
+/**
+ * Checks if a guess is correct by comparing it to the answer.
+ * Uses exact match after normalization, then falls back to fuzzy matching.
+ * Fuzzy matching allows up to 45% character differences (Levenshtein distance).
+ * This threshold balances accepting typos while rejecting clearly wrong answers.
+ */
 function isCorrectGuess(answer: string, guess: string): boolean {
   const normAnswer = normalize(answer);
   const normGuess = normalize(guess);
@@ -19,7 +32,8 @@ function isCorrectGuess(answer: string, guess: string): boolean {
     return true;
   }
 
-  // Fuzzy match with Levenshtein
+  // Fuzzy match with Levenshtein distance
+  // Allow up to 45% character differences based on the longer string
   const maxLength = Math.max(normAnswer.length, normGuess.length);
   const dist = distance(normAnswer, normGuess);
   const threshold = Math.ceil(maxLength * 0.45);

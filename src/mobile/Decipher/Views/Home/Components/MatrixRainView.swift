@@ -10,7 +10,7 @@ struct MatrixRainView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
+            ZStack(alignment: .topLeading) {
                 ForEach(columns) { column in
                     MatrixColumnView(
                         column: column,
@@ -19,6 +19,7 @@ struct MatrixRainView: View {
                     )
                 }
             }
+            .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
             .onAppear {
                 setupColumns(width: geometry.size.width, height: geometry.size.height)
                 startAnimation(height: geometry.size.height)

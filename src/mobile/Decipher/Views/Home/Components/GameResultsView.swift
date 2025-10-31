@@ -7,6 +7,7 @@ struct GameResultsView: View {
     
     @State private var gameStats: GameStats?
     @State private var isLoadingStats = true
+    @State private var showStats = false
     private let apiService = APIService()
     
     private var formattedDuration: String {
@@ -59,7 +60,7 @@ struct GameResultsView: View {
                     }
                 }
             
-            VStack(spacing: 20) {
+            VStack(spacing: 16) {
                 // Header
                 HStack {
                     Spacer()
@@ -70,22 +71,22 @@ struct GameResultsView: View {
                         }
                     }) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 24))
+                            .font(.system(size: 22))
                             .foregroundColor(AppTheme.secondaryTextColor(for: colorScheme))
                     }
                 }
                 
                 // Stats
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     Image(systemName: statusIcon)
-                        .font(.system(size: 60))
+                        .font(.system(size: 48))
                         .foregroundColor(statusColor)
                     
-                    Text("Answer: \(result.answer)")
-                        .font(.system(size: 18, weight: .bold))
+                    Text(result.answer)
+                        .font(.system(size: 20, weight: .bold))
                         .foregroundColor(AppTheme.textColor(for: colorScheme))
                     
-                    HStack(spacing: 40) {
+                    HStack(spacing: 32) {
                         StatItem(
                             icon: "target",
                             label: "Attempts",
@@ -100,36 +101,72 @@ struct GameResultsView: View {
                     }
                     
                     // Visual progress
-                    HStack(spacing: 8) {
+                    HStack(spacing: 6) {
                         ForEach(1...5, id: \.self) { index in
                             Circle()
                                 .fill(circleColor(for: index))
-                                .frame(width: 32, height: 32)
+                                .frame(width: 28, height: 28)
                         }
                     }
-                    .padding(.top, 8)
+                    .padding(.top, 4)
                 }
                 
-                // Divider
-                Rectangle()
-                    .fill(AppTheme.secondaryTextColor(for: colorScheme).opacity(0.2))
-                    .frame(height: 1)
-                    .padding(.vertical, 8)
+                // Stats Toggle Button
+                Button(action: {
+                    if showStats {
+                        // Fade out - natural ease
+                        withAnimation(.easeInOut(duration: 0.35)) {
+                            showStats = false
+                        }
+                    } else {
+                        // Slide in - slower, more natural
+                        withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
+                            showStats = true
+                        }
+                    }
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: showStats ? "chevron.up" : "chart.bar.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                        Text(showStats ? "Hide Stats" : "Show Game Stats")
+                            .font(.system(size: 14, weight: .semibold))
+                    }
+                    .foregroundColor(AppTheme.textColor(for: colorScheme))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 11)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(AppTheme.inputBackground(for: colorScheme))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .strokeBorder(
+                                AppTheme.secondaryTextColor(for: colorScheme).opacity(0.3),
+                                lineWidth: 1.5
+                            )
+                    )
+                }
                 
-                // Game Stats Section
-                GameStatsView(stats: gameStats, isLoading: isLoadingStats)
+                // Game Stats Section (collapsible)
+                if showStats {
+                    GameStatsView(stats: gameStats, isLoading: isLoadingStats)
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .top).combined(with: .opacity),
+                            removal: .opacity
+                        ))
+                }
                 
                 // Share Button
                 Button(action: shareResults) {
-                    HStack(spacing: 8) {
+                    HStack(spacing: 6) {
                         Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                         Text("Share Results")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                     }
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, 12)
                     .background(
                         LinearGradient(
                             colors: [AppTheme.primary, AppTheme.primaryVariant],
@@ -137,14 +174,14 @@ struct GameResultsView: View {
                             endPoint: .trailing
                         )
                     )
-                    .cornerRadius(12)
-                    .shadow(color: AppTheme.primary.opacity(0.4), radius: 12, x: 0, y: 4)
+                    .cornerRadius(10)
+                    .shadow(color: AppTheme.primary.opacity(0.3), radius: 8, x: 0, y: 3)
                 }
                 
                 Spacer()
-                    .frame(height: 40)
+                    .frame(height: 32)
             }
-            .padding(24)
+            .padding(20)
             .frame(maxWidth: .infinity)
             .background(
                 AppTheme.liquidGlass(for: colorScheme)
@@ -214,17 +251,17 @@ struct StatItem: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 20))
+                .font(.system(size: 18))
                 .foregroundColor(AppTheme.primary)
             
             Text(label)
-                .font(.system(size: 12, weight: .medium))
+                .font(.system(size: 11, weight: .medium))
                 .foregroundColor(AppTheme.secondaryTextColor(for: colorScheme))
             
             Text(value)
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(size: 15, weight: .bold))
                 .foregroundColor(AppTheme.textColor(for: colorScheme))
         }
     }

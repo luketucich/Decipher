@@ -15,8 +15,8 @@ struct GameStatsView: View {
     }
     
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 12) {
+        VStack(spacing: 10) {
+            HStack(spacing: 10) {
                 StatBox(
                     icon: "person.3.fill",
                     label: "Submissions",
@@ -57,18 +57,18 @@ struct StatBox: View {
     @State private var isAnimating = false
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 20))
+                .font(.system(size: 18))
                 .foregroundColor(AppTheme.primary)
             
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 10, weight: .medium))
                 .foregroundColor(AppTheme.secondaryTextColor(for: colorScheme))
             
             if isLoading {
                 // Skeleton loading animation
-                RoundedRectangle(cornerRadius: 6)
+                RoundedRectangle(cornerRadius: 5)
                     .fill(
                         LinearGradient(
                             colors: [
@@ -80,7 +80,7 @@ struct StatBox: View {
                             endPoint: isAnimating ? .trailing : .leading
                         )
                     )
-                    .frame(width: 50, height: 20)
+                    .frame(width: 45, height: 18)
                     .onAppear {
                         withAnimation(
                             .easeInOut(duration: 1.2)
@@ -91,15 +91,15 @@ struct StatBox: View {
                     }
             } else {
                 Text(value ?? "—")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundColor(AppTheme.textColor(for: colorScheme))
                     .transition(.opacity.combined(with: .scale(scale: 0.8)))
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
+        .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 10)
                 .fill(AppTheme.inputBackground(for: colorScheme))
         )
     }
@@ -109,20 +109,21 @@ struct EmptyWordCloudView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 8) {
             Text("Common Guesses")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundColor(AppTheme.textColor(for: colorScheme))
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(AppTheme.primary)
+                .frame(maxWidth: .infinity, alignment: .center)
             
             Text("Be the first to play today!")
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: 13, weight: .medium))
                 .foregroundColor(AppTheme.secondaryTextColor(for: colorScheme))
                 .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.vertical, 32)
+                .padding(.vertical, 24)
         }
-        .padding(16)
+        .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 10)
                 .fill(AppTheme.inputBackground(for: colorScheme))
         )
     }

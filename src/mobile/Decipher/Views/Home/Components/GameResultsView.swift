@@ -104,14 +104,19 @@ struct GameResultsView: View {
                 // Stats Toggle Button
                 Button(action: {
                     if showStats {
-                        // Fade out - natural ease
-                        withAnimation(.easeInOut(duration: 0.35)) {
+                        // Smooth hide with spring
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                             showStats = false
                         }
                     } else {
                         // Slide in - slower, more natural
                         withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
                             showStats = true
+                        }
+                        // Refetch stats when opening
+                        Task {
+                            isLoadingStats = true
+                            await fetchGameStats()
                         }
                     }
                 }) {

@@ -1,114 +1,113 @@
 import SwiftUI
+import Combine
 
 struct MatrixRainView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State private var columns: [MatrixColumn] = []
-    @State private var displayLink: CADisplayLink?
+    @State private var drops: [MatrixDrop] = []
+    @State private var screenWidth: CGFloat = 0
+    @State private var screenHeight: CGFloat = 0
     
-    let columnCount = 12
-    let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
+    let timer = Timer.publish(every: 1/60, on: .main, in: .common).autoconnect()
     
     var body: some View {
         GeometryReader { geometry in
-            ZStack(alignment: .topLeading) {
-                ForEach(columns) { column in
-                    MatrixColumnView(
-                        column: column,
-                        characters: characters,
-                        colorScheme: colorScheme
-                    )
+            ZStack {
+                Color.clear
+                
+                ForEach(drops) { drop in
+                    VStack(spacing: 4) {
+                        ForEach(0..<drop.characters.count, id: \.self) { index in
+                            Text(drop.characters[index])
+                                .font(.system(size: 14, weight: .medium, design: .monospaced))
+                                .foregroundColor(
+                                    AppTheme.primary.opacity(
+                                        index == 0 ? 1.0 : max(0.05, Double(drop.characters.count - index) / Double(drop.characters.count) * 0.4)
+                                    )
+                                )
+                        }
+                    }
+                    .position(x: drop.xPosition, y: drop.yPosition)
                 }
             }
-            .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .clipped()
             .onAppear {
-                setupColumns(width: geometry.size.width, height: geometry.size.height)
-                startAnimation(height: geometry.size.height)
+                screenWidth = geometry.size.width
+                screenHeight = geometry.size.height
+                setupDrops()
             }
-            .onDisappear {
-                displayLink?.invalidate()
-                displayLink = nil
+            .onChange(of: geometry.size) { oldSize, newSize in
+                screenWidth = newSize.width
+                screenHeight = newSize.height
+                setupDrops()
+            }
+            .onReceive(timer) { _ in
+                updateDrops()
             }
         }
-        .ignoresSafeArea()
+        .edgesIgnoringSafeArea(.all)
     }
     
-    private func setupColumns(width: CGFloat, height: CGFloat) {
-        let columnWidth = width / CGFloat(columnCount)
-        columns = (0..<columnCount).map { index in
-            MatrixColumn(
+    private func setupDrops() {
+        guard screenWidth > 0 else { return }
+        
+        let columnSpacing: CGFloat = 20
+        let columnCount = Int(ceil(screenWidth / columnSpacing))
+        
+        drops = (0..<columnCount).map { index in
+            let xPos = (CGFloat(index) * columnSpacing) + (columnSpacing / 2)
+            return MatrixDrop(
                 id: UUID(),
-                xPosition: CGFloat(index) * columnWidth,
+                xPosition: xPos,
+                yPosition: CGFloat.random(in: -screenHeight...0),
                 characters: generateRandomCharacters(),
-                speed: Double.random(in: 0.5...1.5),
-                offset: Double.random(in: -height...0)
+                speed: CGFloat.random(in: 1.5...4.0),
+                changeCounter: Int.random(in: 0...120),
+                changeInterval: Int.random(in: 30...120)
             )
         }
     }
     
     private func generateRandomCharacters() -> [String] {
-        (0..<20).map { _ in
-            String(characters.randomElement() ?? "A")
+        let chars = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*")
+        let length = Int.random(in: 12...25)
+        return (0..<length).map { _ in String(chars.randomElement()!) }
+    }
+    
+    private func updateDrops() {
+        guard screenHeight > 0 else { return }
+        
+        for index in drops.indices {
+            // Move drop down
+            drops[index].yPosition += drops[index].speed
+            
+            // Occasionally change some characters for dynamic effect
+            drops[index].changeCounter += 1
+            if drops[index].changeCounter >= drops[index].changeInterval {
+                drops[index].changeCounter = 0
+                let randomIndex = Int.random(in: 0..<drops[index].characters.count)
+                let chars = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*")
+                drops[index].characters[randomIndex] = String(chars.randomElement()!)
+            }
+            
+            // Reset drop when it goes completely off screen
+            let dropHeight = CGFloat(drops[index].characters.count) * 18
+            if drops[index].yPosition - dropHeight > screenHeight {
+                drops[index].yPosition = -CGFloat.random(in: 100...400)
+                drops[index].characters = generateRandomCharacters()
+                drops[index].speed = CGFloat.random(in: 1.5...4.0)
+                drops[index].changeInterval = Int.random(in: 30...120)
+            }
         }
     }
-    
-    private func startAnimation(height: CGFloat) {
-        // Use device's maximum refresh rate (120Hz on ProMotion, 60Hz otherwise)
-        let link = CADisplayLink(target: TargetProxy {
-            withAnimation(.linear(duration: 1/120.0)) {
-                for index in columns.indices {
-                    columns[index].offset += columns[index].speed * 2
-                    
-                    if columns[index].offset > height + 200 {
-                        columns[index].offset = -200
-                        columns[index].characters = generateRandomCharacters()
-                    }
-                }
-            }
-        }, selector: #selector(TargetProxy.tick))
-        
-        link.add(to: .main, forMode: .common)
-        displayLink = link
-    }
 }
 
-// Helper class for CADisplayLink
-class TargetProxy {
-    private let action: () -> Void
-    
-    init(_ action: @escaping () -> Void) {
-        self.action = action
-    }
-    
-    @objc func tick() {
-        action()
-    }
-}
-
-struct MatrixColumn: Identifiable {
+struct MatrixDrop: Identifiable {
     let id: UUID
     let xPosition: CGFloat
+    var yPosition: CGFloat
     var characters: [String]
-    let speed: Double
-    var offset: Double
-}
-
-struct MatrixColumnView: View {
-    let column: MatrixColumn
-    let characters: String
-    let colorScheme: ColorScheme
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            ForEach(0..<column.characters.count, id: \.self) { index in
-                Text(column.characters[index])
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                    .foregroundColor(
-                        AppTheme.primary.opacity(
-                            index == 0 ? 0.9 : Double(column.characters.count - index) / Double(column.characters.count) * 0.3
-                        )
-                    )
-            }
-        }
-        .offset(x: column.xPosition, y: column.offset)
-    }
+    var speed: CGFloat
+    var changeCounter: Int
+    var changeInterval: Int
 }

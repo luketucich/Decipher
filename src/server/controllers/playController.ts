@@ -11,14 +11,15 @@ import {
  */
 export const getDaily = async (req: Request, res: Response) => {
   try {
-    const today = new Date().toISOString().split("T")[0]!; // Get YYYY-MM-DD format
-    const topic = await getTopicByDate(new Date(today));
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Local midnight
+    const topic = await getTopicByDate(today);
 
     if (!topic) {
       return res.status(404).json({ error: "No topic found for today" });
     }
 
-    const topicNumber = await getTopicNumber(new Date(today));
+    const topicNumber = await getTopicNumber(today);
 
     return res.status(200).json({ ...topic, topicNumber });
   } catch (error) {

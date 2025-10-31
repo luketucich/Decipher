@@ -23,8 +23,8 @@ const submitGame = async (
 };
 
 const playExampleGame = async () => {
-  let date = new Date();
-  date.setUTCHours(0, 0, 0, 0); // Normalize to midnight
+  const now = new Date();
+  let date = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Local midnight
 
   const dailyTopic = await getTopicByDate(date);
   const hints = dailyTopic?.hints.map((hint) => hint.content) || [];

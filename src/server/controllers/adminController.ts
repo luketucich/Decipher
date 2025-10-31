@@ -23,8 +23,9 @@ export const createTopic = async (req: Request, res: Response) => {
   }
 
   try {
-    // Convert date string to Date object
-    const topicDate = new Date(date);
+    // Convert date string (YYYY-MM-DD) to Date object at local midnight
+    const [year, month, day] = date.split("-").map(Number);
+    const topicDate = new Date(year, month - 1, day); // month is 0-indexed
     if (isNaN(topicDate.getTime())) {
       return res.status(400).json({ error: "Invalid date format" });
     }

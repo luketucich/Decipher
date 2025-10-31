@@ -106,21 +106,20 @@ const generateTopics = async (amount: number) => {
     // Get next date to generate topic for
     let date: Date;
     if (pastTopics.length > 0 && pastTopics[0]?.date) {
-      date = new Date(pastTopics[0].date);
-      date = new Date(date.getTime() + 24 * 60 * 60 * 1000); // add one day
+      const lastDate = new Date(pastTopics[0].date);
+      date = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate() + 1); // add one day
     } else {
-      date = new Date();
+      const now = new Date();
+      date = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Local midnight
     }
 
-    date.setUTCHours(0, 0, 0, 0); // Set to midnight
-    const dateStr = date.toISOString().split("T")[0]!; // YYYY-MM-DD
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; // YYYY-MM-DD
 
     try {
       await generateTopic(dateStr, pastTopics);
     } catch (error) {
       console.error(`Error generating topic for ${dateStr}:`, error);
     }
-
   }
 };
 

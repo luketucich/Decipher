@@ -134,7 +134,7 @@ struct PlayContentView: View {
         guard !gameCompleted, currentHintIndex <= 5, !(guesses[currentHintIndex] ?? "").isEmpty else { return }
         
         let currentGuess = guesses[currentHintIndex] ?? ""
-        let isCorrect = currentGuess.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) == topic.answer.lowercased()
+        let isCorrect = GuessMatcher.isCorrectGuess(answer: topic.answer, guess: currentGuess)
         
         isInputFocused = false
         isMovingForward = true

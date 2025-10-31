@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
+    "prestart": "prisma migrate deploy",
     "start": "node ./dist/app.js",
+    "postinstall": "prisma generate",
     "topic": "tsx ./src/server/scripts/generateTopics.ts",
     "match": "tsx ./src/server/utils/guessMatcher.ts",
     "play": "tsx ./src/server/scripts/exampleGame.ts"
@@ -19,23 +21,34 @@
   "author": "",
   "license": "ISC",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "bugs": {
     "url": "https://github.com/luketucich/Decipher/issues"
   },
   "homepage": "https://github.com/luketucich/Decipher#readme",
   "dependencies": {
     "@prisma/client": "^6.18.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-rate-limit": "^6.11.2",
     "fastest-levenshtein": "^1.0.16",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
     "node-fetch": "^3.3.2",
-    "openai": "^6.7.0"
+    "openai": "^6.7.0",
+    "prisma": "^6.18.0"
   },
   "devDependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.3",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^24.9.2",
-    "dotenv": "^17.2.3",
     "nodemon": "^3.1.10",
-    "prisma": "^6.18.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

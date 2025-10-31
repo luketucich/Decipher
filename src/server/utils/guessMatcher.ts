@@ -15,10 +15,6 @@ function isCorrectGuess(answer: string, guess: string): boolean {
   const normAnswer = normalize(answer);
   const normGuess = normalize(guess);
 
-  console.log(
-    `Normalized Answer: "${normAnswer}", Normalized Guess: "${normGuess}"`
-  );
-
   if (normAnswer === normGuess) {
     return true;
   }

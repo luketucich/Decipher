@@ -1,7 +1,7 @@
 import Foundation
 
 class APIService {
-    private let baseURL = "http://localhost:3000"
+    private var baseURL = "https://deciphergame.com"
     
     func fetchDailyTopic() async throws -> Topic {
         let url = URL(string: "\(baseURL)/play/daily")!

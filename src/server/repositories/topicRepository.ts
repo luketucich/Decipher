@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../db/prisma.js";
 
 export async function getTopicNumber(date: Date) {
   const count = await prisma.topic.count({
@@ -16,7 +14,7 @@ export async function getTopicNumber(date: Date) {
 export async function getTopicByDate(date: Date) {
   return prisma.topic.findUnique({
     where: { date },
-    include: { hints: { orderBy: { id: "asc" } } },
+    include: { hints: { orderBy: { order: "asc" } } },
   });
 }
 

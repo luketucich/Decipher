@@ -14,15 +14,20 @@ export const getDaily = async (req: Request, res: Response) => {
     // Accept client's local date as YYYY-MM-DD query param, default to UTC date
     const clientDate = req.query.date as string | undefined;
     let today: Date;
-    
+
     if (clientDate && /^\d{4}-\d{2}-\d{2}$/.test(clientDate)) {
-      const [year, month, day] = clientDate.split("-").map(Number);
+      const parts = clientDate.split("-");
+      const year = Number(parts[0]);
+      const month = Number(parts[1]);
+      const day = Number(parts[2]);
       today = new Date(Date.UTC(year, month - 1, day));
     } else {
       const now = new Date();
-      today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+      today = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+      );
     }
-    
+
     const topic = await getTopicByDate(today);
 
     if (!topic) {

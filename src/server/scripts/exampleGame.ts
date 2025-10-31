@@ -24,7 +24,9 @@ const submitGame = async (
 
 const playExampleGame = async () => {
   const now = new Date();
-  let date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())); // UTC midnight for today's local date
+  let date = new Date(
+    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+  ); // UTC midnight for today's local date
 
   const dailyTopic = await getTopicByDate(date);
   const hints = dailyTopic?.hints.map((hint) => hint.content) || [];

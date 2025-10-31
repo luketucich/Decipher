@@ -12,7 +12,7 @@ import {
 export const getDaily = async (req: Request, res: Response) => {
   try {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Local midnight
+    const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())); // UTC midnight for today's local date
     const topic = await getTopicByDate(today);
 
     if (!topic) {

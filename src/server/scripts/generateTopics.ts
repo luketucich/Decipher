@@ -107,13 +107,24 @@ const generateTopics = async (amount: number) => {
     let date: Date;
     if (pastTopics.length > 0 && pastTopics[0]?.date) {
       const lastDate = new Date(pastTopics[0].date);
-      date = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate() + 1); // add one day
+      date = new Date(
+        Date.UTC(
+          lastDate.getUTCFullYear(),
+          lastDate.getUTCMonth(),
+          lastDate.getUTCDate() + 1
+        )
+      ); // add one day at UTC
     } else {
       const now = new Date();
-      date = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Local midnight
+      date = new Date(
+        Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+      ); // UTC midnight for today's local date
     }
 
-    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; // YYYY-MM-DD
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const dateStr = `${year}-${month}-${day}`; // YYYY-MM-DD
 
     try {
       await generateTopic(dateStr, pastTopics);

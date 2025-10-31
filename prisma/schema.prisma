@@ -3,43 +3,43 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model Topic {
   id          String       @id @default(cuid())
-  answer      String // The actual topic
-  date        DateTime     @unique // The date this topic is featured
-  type        String // e.g., "Public Figure", "Movie", "Book", etc.
+  answer      String
+  date        DateTime     @unique
+  type        String
   hints       Hint[]
   submissions Submission[]
 
-  @@index([date]) // Used to quickly find topics by date
+  @@index([date])
 }
 
 model Hint {
   id      String @id @default(cuid())
   topicId String
+  content String
+  type    String
+  order   Int
   topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  content String // The hint content
-  type    String // Category, Emoji, Quote, Trivia, Definition
-  order   Int // Order of the hint (1-5)
 
-  @@unique([topicId, order]) // Ensure unique order per topic
-  @@index([topicId]) // For efficient lookups by topic
+  @@unique([topicId, order])
+  @@index([topicId])
 }
 
 model Submission {
   id        String   @id @default(cuid())
   topicId   String
-  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  attempts  Int // Number of attempts made
-  guesses   String[] // List of guesses made, e.g., ["Einstein", "Newton"]
-  duration  Int // Time taken in seconds to guess correctly
-  success   Boolean  @default(false) // Whether the player guessed correctly
+  attempts  Int
+  guesses   String[]
+  duration  Int
+  success   Boolean  @default(false)
   createdAt DateTime @default(now())
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
 
-  @@index([topicId]) // For efficient lookups by topic
+  @@index([topicId])
 }

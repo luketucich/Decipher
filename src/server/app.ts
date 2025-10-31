@@ -1,16 +1,16 @@
-import "dotenv/config";
-import express from "express";
-import helmet from "helmet";
 import compression from "compression";
 import cors, { type CorsOptions } from "cors";
+import "dotenv/config";
+import express from "express";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import morgan from "morgan";
 
-import adminRoutes from "./routes/adminRoutes.js";
-import playRoutes from "./routes/playRoutes.js";
+import { prisma } from "./db/prisma.js";
 import adminAuth from "./middleware/adminAuth.js";
 import errorHandler from "./middleware/errorHandler.js";
-import { prisma } from "./db/prisma.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import playRoutes from "./routes/playRoutes.js";
 
 const app = express();
 const PORT = Number.parseInt(process.env.PORT ?? "3000", 10);
@@ -23,12 +23,16 @@ app.use(helmet());
 app.use(compression());
 
 // CORS configuration (set CORS_ORIGINS env as comma-separated list)
-const envOrigins = (process.env.CORS_ORIGINS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+const envOrigins = (process.env.CORS_ORIGINS ?? "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 const defaultOrigins = [
   "https://deciphergame.com",
   "https://www.deciphergame.com",
   "http://localhost:3000",
   "http://localhost:5173",
+  "https://decipher-wdx2.onrender.com",
 ];
 const corsOptions: CorsOptions = {
   origin: envOrigins.length ? envOrigins : defaultOrigins,

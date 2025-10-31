@@ -1,5 +1,8 @@
 import { type Request, type Response } from "express";
-import { createSubmission } from "../repositories/submissionRepository.js";
+import {
+  createSubmission,
+  getTopicStats,
+} from "../repositories/submissionRepository.js";
 import {
   getTopicByDate,
   getTopicNumber,
@@ -73,5 +76,25 @@ export const submitGame = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error creating submission:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+/**
+ * GET /play/stats/:topicId
+ * Fetches aggregated statistics for a specific topic.
+ */
+export const getStats = async (req: Request, res: Response) => {
+  const { topicId } = req.params;
+
+  if (!topicId) {
+    return res.status(400).json({ error: "Topic ID is required" });
+  }
+
+  try {
+    const stats = await getTopicStats(topicId);
+    return res.status(200).json(stats);
+  } catch (error) {
+    console.error("Error fetching topic stats:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -52,11 +52,10 @@ export async function getTopicStats(topicId: string) {
     });
   });
 
-  // Sort by frequency and take top 20
+  // Sort by frequency (showing all unique guesses)
   const commonGuesses = Array.from(guessFrequency.entries())
     .map(([guess, count]) => ({ guess, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 20);
+    .sort((a, b) => b.count - a.count);
 
   // Calculate time stats
   const durations = submissions.map((s) => s.duration);

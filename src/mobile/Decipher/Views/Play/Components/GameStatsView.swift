@@ -40,9 +40,9 @@ struct GameStatsView: View {
             }
             
             if let stats = stats, !stats.commonGuesses.isEmpty {
-                WordCloudView(guesses: stats.commonGuesses)
+                TopGuessesView(guesses: stats.commonGuesses)
             } else if !isLoading {
-                EmptyWordCloudView()
+                EmptyTopGuessesView()
             }
         }
     }
@@ -105,12 +105,12 @@ struct StatBox: View {
     }
 }
 
-struct EmptyWordCloudView: View {
+struct EmptyTopGuessesView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(spacing: 8) {
-            Text("Common Guesses")
+            Text("Top Guesses")
                 .font(.system(size: 14, weight: .bold))
                 .foregroundColor(AppTheme.primary)
                 .frame(maxWidth: .infinity, alignment: .center)

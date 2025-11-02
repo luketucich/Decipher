@@ -37,7 +37,11 @@ Generate a daily puzzle topic for my guessing game Decipher.
       pastAnswers || "None"
     }. Generate something completely new, unique, and less predictable.**
 
-    The hints should start vague and get more specific. **Make hints challenging: the first 2-3 should be subtle, requiring thought; avoid obvious giveaways early.** **Ensure the first 3 hints are highly abstract and indirect, forcing players to connect multiple dots; only the last 2 should provide clearer ties to the answer.** **Design hints so they build cumulatively; each subsequent hint should only make sense in combination with previous ones, avoiding standalone reveals.**
+    The hints should start vague and get more specific. 
+    
+    **Make hints challenging: the first 2-3 should be subtle, requiring thought; avoid obvious giveaways early.** 
+    **Ensure the first 3 hints are highly abstract and indirect, forcing players to connect multiple dots; only the last 2 should provide clearer ties to the answer.** 
+    **Design hints so they build cumulatively; each subsequent hint should only make sense in combination with previous ones, avoiding standalone reveals.**
 
     The first hint should be a Broad Category (like 'Early 20th Century Adventure Film' or 'Influential Theoretical Physicist') that avoids key identifiers.
     The second hint should be an Emoji representation (please use only emojis, no text). Use 3-5 emojis that symbolically represent themes or elements indirectly, without direct icons of the answer.
@@ -46,7 +50,9 @@ Generate a daily puzzle topic for my guessing game Decipher.
     The fifth hint should be a Definition or direct clue.
 
     For daily topics, focus on well-known subjects from various categories like Movies, Books, Historical Figures, Songs, etc.
-    Feel free to do pop culture references, but avoid overly obscure topics. **Choose topics that are recognizable but lean toward medium-hard to hard difficulty, where players typically need 4-5 hints; prioritize subjects with niche cultural significance or lesser-known details over mainstream hits.**
+    Feel free to do pop culture references, but avoid overly obscure topics. 
+    
+    **Choose topics that are recognizable but lean toward medium-hard to hard difficulty, where players typically need 4-5 hints.**
 
     Try to make the game challenging and fun!
 

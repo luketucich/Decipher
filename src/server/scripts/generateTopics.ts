@@ -134,9 +134,9 @@ const generateTopics = async (amount: number) => {
   }
 };
 
-// Parse command-line argument for the number of topics (default to 7 if not provided)
+// Parse command-line argument for the number of topics (default to 1 if not provided)
 const args = process.argv.slice(2);
-const amount = args.length > 0 ? parseInt(args[0]!, 10) : 7;
+const amount = args.length > 0 ? parseInt(args[0]!, 10) : 1;
 if (isNaN(amount) || amount <= 0) {
   console.error(
     "Please provide a valid positive number for the amount of topics."

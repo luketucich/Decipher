@@ -117,7 +117,7 @@ export const moderateGuess = async (req: Request, res: Response) => {
     if (result.flagged) {
       return res.status(200).json({
         appropriate: false,
-        message: "Please keep your guesses appropriate and avoid offensive language.",
+        message: result.reason || "Please keep your guesses appropriate.",
       });
     }
 

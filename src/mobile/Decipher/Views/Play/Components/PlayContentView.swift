@@ -80,15 +80,32 @@ struct PlayContentView: View {
             
             Spacer()
             
-            PlayInputField(
-                text: Binding(
-                    get: { guesses[currentHintIndex] ?? "" },
-                    set: { guesses[currentHintIndex] = $0 }
-                ),
-                isFocused: $isInputFocused,
-                isDisabled: gameCompleted || currentHintIndex < maxUnlockedHintIndex || isCheckingModeration,
-                onSubmit: handleSubmit
-            )
+            VStack(spacing: 8) {
+                // Error message above input
+                if showModerationError {
+                    Text(moderationErrorMessage)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.red.opacity(0.9))
+                        )
+                        .padding(.horizontal, 32)
+                        .transition(.scale.combined(with: .opacity))
+                }
+                
+                PlayInputField(
+                    text: Binding(
+                        get: { guesses[currentHintIndex] ?? "" },
+                        set: { guesses[currentHintIndex] = $0 }
+                    ),
+                    isFocused: $isInputFocused,
+                    isDisabled: gameCompleted || currentHintIndex < maxUnlockedHintIndex || isCheckingModeration,
+                    onSubmit: handleSubmit
+                )
+            }
             
             Spacer()
         }
@@ -104,27 +121,6 @@ struct PlayContentView: View {
                 GameResultsView(isPresented: $showResults, result: result)
                     .transition(.move(edge: .bottom))
                     .zIndex(1)
-            }
-        }
-        .overlay {
-            if showModerationError {
-                VStack {
-                    Spacer()
-                    
-                    Text(moderationErrorMessage)
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.red.opacity(0.9))
-                        )
-                        .padding(.horizontal, 32)
-                        .padding(.bottom, 200)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-                .zIndex(2)
             }
         }
     }
@@ -163,7 +159,7 @@ struct PlayContentView: View {
         isCheckingModeration = true
         Task {
             do {
-                let isAppropriate = try await viewModel.moderateGuess(currentGuess)
+                let (isAppropriate, message) = try await viewModel.moderateGuess(currentGuess)
                 
                 await MainActor.run {
                     isCheckingModeration = false
@@ -173,7 +169,7 @@ struct PlayContentView: View {
                         if settings.hapticsEnabled {
                             notificationFeedback.notificationOccurred(.error)
                         }
-                        moderationErrorMessage = "Please keep your guesses appropriate and avoid offensive language."
+                        moderationErrorMessage = message ?? "Please keep your guesses appropriate."
                         showModerationError = true
                         guesses[currentHintIndex] = ""
                         

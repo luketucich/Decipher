@@ -31,10 +31,11 @@ export interface ModerationResult {
  */
 /**
  * Check if text contains only allowed characters
- * Allows: a-z, A-Z, 0-9, spaces, and basic punctuation (.,!?'-)
+ * Allows: a-z, A-Z, 0-9, spaces, and basic punctuation
  */
 function hasValidCharacters(text: string): boolean {
-  const allowedPattern = /^[a-zA-Z0-9\s.,!?'\-]+$/;
+  // Allow letters, numbers, spaces, and common punctuation: . , ! ? ' " - : ; ( ) & /
+  const allowedPattern = /^[a-zA-Z0-9\s.,!?'"\-:;()&\/]+$/;
   return allowedPattern.test(text);
 }
 

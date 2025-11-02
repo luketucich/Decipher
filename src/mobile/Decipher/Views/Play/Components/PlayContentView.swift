@@ -121,7 +121,7 @@ struct PlayContentView: View {
                                 .fill(Color.red.opacity(0.9))
                         )
                         .padding(.horizontal, 32)
-                        .padding(.bottom, 120)
+                        .padding(.bottom, 200)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
                 .zIndex(2)

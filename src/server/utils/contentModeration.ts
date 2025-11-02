@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import * as leo from "leo-profanity";
 
 // Initialize OpenAI client for moderation (uses standard OpenAI, not X.AI)
 const openai = new OpenAI({
@@ -28,6 +29,15 @@ export interface ModerationResult {
  * @param text - The text to check for inappropriate content
  * @returns ModerationResult with flagged status and details
  */
+/**
+ * Check if text contains only allowed characters
+ * Allows: a-z, A-Z, 0-9, spaces, and basic punctuation (.,!?'-)
+ */
+function hasValidCharacters(text: string): boolean {
+  const allowedPattern = /^[a-zA-Z0-9\s.,!?'\-]+$/;
+  return allowedPattern.test(text);
+}
+
 export async function moderateContent(
   text: string
 ): Promise<ModerationResult> {
@@ -37,7 +47,24 @@ export async function moderateContent(
       return { flagged: false };
     }
 
-    // Call OpenAI Moderation API
+    // Layer 1: Character validation
+    if (!hasValidCharacters(text)) {
+      return {
+        flagged: true,
+        reason: "Please use only letters, numbers, and basic punctuation",
+      };
+    }
+
+    // Layer 2: Profanity check
+    if (leo.check(text)) {
+      return {
+        flagged: true,
+        reason: "Please keep your guesses appropriate and avoid profanity",
+      };
+    }
+
+    // Layer 3: OpenAI Moderation API for harmful content
+    // (violence, self-harm, hate speech, etc.)
     const moderation = await openai.moderations.create({
       input: text,
     });

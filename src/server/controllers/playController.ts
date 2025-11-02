@@ -7,6 +7,7 @@ import {
   getTopicByDate,
   getTopicNumber,
 } from "../repositories/topicRepository.js";
+import { moderateContent } from "../utils/contentModeration.js";
 
 /**
  * GET /play/daily
@@ -96,5 +97,34 @@ export const getStats = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching topic stats:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+/**
+ * POST /play/moderate
+ * Checks if a guess contains inappropriate content using OpenAI Moderation API.
+ */
+export const moderateGuess = async (req: Request, res: Response) => {
+  const { guess } = req.body;
+
+  if (typeof guess !== "string") {
+    return res.status(400).json({ error: "Guess must be a string" });
+  }
+
+  try {
+    const result = await moderateContent(guess);
+
+    if (result.flagged) {
+      return res.status(200).json({
+        appropriate: false,
+        message: "Please keep your guesses appropriate and avoid offensive language.",
+      });
+    }
+
+    return res.status(200).json({ appropriate: true });
+  } catch (error) {
+    console.error("Error moderating guess:", error);
+    // On error, allow the guess through (fail open)
+    return res.status(200).json({ appropriate: true });
   }
 };

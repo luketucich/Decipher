@@ -26,6 +26,9 @@ struct PlayContentView: View {
     @State private var gameWon = false
     @State private var showResults = false
     @State private var gameResult: GameResult?
+    @State private var isCheckingModeration = false
+    @State private var showModerationError = false
+    @State private var moderationErrorMessage = ""
     
     // Haptic feedback generators
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -83,7 +86,7 @@ struct PlayContentView: View {
                     set: { guesses[currentHintIndex] = $0 }
                 ),
                 isFocused: $isInputFocused,
-                isDisabled: gameCompleted || currentHintIndex < maxUnlockedHintIndex,
+                isDisabled: gameCompleted || currentHintIndex < maxUnlockedHintIndex || isCheckingModeration,
                 onSubmit: handleSubmit
             )
             
@@ -101,6 +104,27 @@ struct PlayContentView: View {
                 GameResultsView(isPresented: $showResults, result: result)
                     .transition(.move(edge: .bottom))
                     .zIndex(1)
+            }
+        }
+        .overlay {
+            if showModerationError {
+                VStack {
+                    Spacer()
+                    
+                    Text(moderationErrorMessage)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.red.opacity(0.9))
+                        )
+                        .padding(.horizontal, 32)
+                        .padding(.bottom, 120)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+                .zIndex(2)
             }
         }
     }
@@ -134,6 +158,46 @@ struct PlayContentView: View {
         guard !gameCompleted, currentHintIndex <= 5, !(guesses[currentHintIndex] ?? "").isEmpty else { return }
         
         let currentGuess = guesses[currentHintIndex] ?? ""
+        
+        // Check content moderation before processing guess
+        isCheckingModeration = true
+        Task {
+            do {
+                let isAppropriate = try await viewModel.moderateGuess(currentGuess)
+                
+                await MainActor.run {
+                    isCheckingModeration = false
+                    
+                    if !isAppropriate {
+                        // Show error and clear the inappropriate guess
+                        if settings.hapticsEnabled {
+                            notificationFeedback.notificationOccurred(.error)
+                        }
+                        moderationErrorMessage = "Please keep your guesses appropriate and avoid offensive language."
+                        showModerationError = true
+                        guesses[currentHintIndex] = ""
+                        
+                        // Hide error after 3 seconds
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            showModerationError = false
+                        }
+                        return
+                    }
+                    
+                    // If appropriate, process the guess
+                    processGuess(currentGuess)
+                }
+            } catch {
+                // If moderation check fails, allow the guess through
+                await MainActor.run {
+                    isCheckingModeration = false
+                    processGuess(currentGuess)
+                }
+            }
+        }
+    }
+    
+    private func processGuess(_ currentGuess: String) {
         let isCorrect = GuessMatcher.isCorrectGuess(answer: topic.answer, guess: currentGuess)
         
         isInputFocused = false

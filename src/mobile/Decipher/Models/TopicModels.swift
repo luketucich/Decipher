@@ -38,3 +38,8 @@ struct GameStats: Codable {
     let fastestGuessTime: Int
     let commonGuesses: [GuessCount]
 }
+
+struct ModerationResponse: Codable {
+    let appropriate: Bool
+    let message: String?
+}

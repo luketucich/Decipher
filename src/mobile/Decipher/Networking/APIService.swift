@@ -55,4 +55,23 @@ class APIService {
         
         return try JSONDecoder().decode(GameStats.self, from: data)
     }
+    
+    func moderateGuess(_ guess: String) async throws -> ModerationResponse {
+        let url = URL(string: "\(baseURL)/play/moderate")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body: [String: Any] = ["guess": guess]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+        
+        return try JSONDecoder().decode(ModerationResponse.self, from: data)
+    }
 }

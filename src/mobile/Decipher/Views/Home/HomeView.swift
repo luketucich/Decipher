@@ -9,6 +9,7 @@ struct HomeView: View {
     @State private var showHowToPlay = false
     @State private var showSettings = false
     @State private var showSupport = false
+    @State private var showTerms = false
     
     var body: some View {
         NavigationStack {
@@ -173,23 +174,43 @@ struct HomeView: View {
                     .padding(.horizontal, 32)
                     .padding(.top, 16)
                     
-                    // Support button (smaller, less prominent)
-                    Button(action: {
-                        if settings.hapticsEnabled {
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    // Support and Terms buttons (smaller, less prominent)
+                    HStack(spacing: 16) {
+                        Button(action: {
+                            if settings.hapticsEnabled {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            }
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                showTerms = true
+                            }
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "doc.text.fill")
+                                    .font(.system(size: 12))
+                                Text("Terms")
+                                    .font(.system(size: 12, weight: .medium))
+                            }
+                            .foregroundColor(AppTheme.primary.opacity(0.7))
+                            .padding(.vertical, 10)
                         }
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                            showSupport = true
+                        
+                        Button(action: {
+                            if settings.hapticsEnabled {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            }
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                showSupport = true
+                            }
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "heart.fill")
+                                    .font(.system(size: 12))
+                                Text("Support")
+                                    .font(.system(size: 12, weight: .medium))
+                            }
+                            .foregroundColor(AppTheme.primary.opacity(0.7))
+                            .padding(.vertical, 10)
                         }
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "heart.fill")
-                                .font(.system(size: 12))
-                            Text("Support")
-                                .font(.system(size: 12, weight: .medium))
-                        }
-                        .foregroundColor(AppTheme.primary.opacity(0.7))
-                        .padding(.vertical, 10)
                     }
                     .padding(.top, 8)
                     
@@ -217,6 +238,13 @@ struct HomeView: View {
             .overlay {
                 if showSupport {
                     SupportView(isPresented: $showSupport)
+                        .transition(.move(edge: .bottom))
+                        .zIndex(1)
+                }
+            }
+            .overlay {
+                if showTerms {
+                    TermsView(isPresented: $showTerms)
                         .transition(.move(edge: .bottom))
                         .zIndex(1)
                 }

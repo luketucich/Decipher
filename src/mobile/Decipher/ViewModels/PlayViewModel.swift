@@ -33,4 +33,10 @@ class PlayViewModel: ObservableObject {
             success: success
         )
     }
+    
+    @MainActor
+    func moderateGuess(_ guess: String) async throws -> Bool {
+        let result = try await apiService.moderateGuess(guess)
+        return result.appropriate
+    }
 }

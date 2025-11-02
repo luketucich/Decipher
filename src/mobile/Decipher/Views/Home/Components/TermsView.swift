@@ -36,7 +36,7 @@ struct TermsView: View {
                 
                 // Quick Links
                 HStack(spacing: 12) {
-                    Link(destination: URL(string: "https://github.com/luketucich/Decipher/blob/main/TERMS_OF_SERVICE.md")!) {
+Link(destination: URL(string: "https://github.com/luketucich/Decipher/blob/main/PRIVACY_POLICY.md")!) {
                         HStack(spacing: 6) {
                             Image(systemName: "hand.raised.fill")
                                 .font(.system(size: 14))

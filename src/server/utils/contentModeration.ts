@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import * as leo from "leo-profanity";
+import leo from "leo-profanity";
 
 // Initialize OpenAI client for moderation (uses standard OpenAI, not X.AI)
 const openai = new OpenAI({

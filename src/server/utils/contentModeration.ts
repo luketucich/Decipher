@@ -1,5 +1,5 @@
-import OpenAI from "openai";
 import leo from "leo-profanity";
+import OpenAI from "openai";
 
 // Initialize OpenAI client for moderation (uses standard OpenAI, not X.AI)
 const openai = new OpenAI({
@@ -35,13 +35,11 @@ export interface ModerationResult {
  */
 function hasValidCharacters(text: string): boolean {
   // Allow letters, numbers, spaces, and common punctuation: . , ! ? ' " - : ; ( ) & /
-  const allowedPattern = /^[a-zA-Z0-9\s.,!?'"\-:;()&\/]+$/;
+  const allowedPattern = /^[a-zA-Z0-9\s.,!?'"\u2019\-:;()&\/]+$/;
   return allowedPattern.test(text);
 }
 
-export async function moderateContent(
-  text: string
-): Promise<ModerationResult> {
+export async function moderateContent(text: string): Promise<ModerationResult> {
   try {
     // Basic validation
     if (!text || text.trim().length === 0) {
@@ -52,7 +50,7 @@ export async function moderateContent(
     if (!hasValidCharacters(text)) {
       return {
         flagged: true,
-        reason: "Please use only letters, numbers, and basic punctuation",
+        reason: "Please use only letters, numbers, and basic punctuation.",
       };
     }
 
@@ -60,7 +58,8 @@ export async function moderateContent(
     if (leo.check(text)) {
       return {
         flagged: true,
-        reason: "Please keep your guesses appropriate and avoid profanity",
+        reason:
+          "Please keep your guesses appropriate and avoid offensive content.",
       };
     }
 
@@ -77,15 +76,10 @@ export async function moderateContent(
     }
 
     if (result.flagged) {
-      // Find which categories were flagged
-      const flaggedCategories = Object.entries(result.categories)
-        .filter(([_, value]) => value)
-        .map(([key]) => key);
-
       return {
         flagged: true,
-        categories: result.categories,
-        reason: `Content flagged for: ${flaggedCategories.join(", ")}`,
+        reason:
+          "Please keep your guesses appropriate and avoid offensive content.",
       };
     }
 

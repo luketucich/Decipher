@@ -36,29 +36,30 @@ struct SupportView: View {
                     
                     // Content
                     VStack(spacing: 16) {
-                        Image(systemName: "heart.circle.fill")
+                        Image(systemName: "cup.and.saucer.fill")
                             .font(.system(size: 48))
                             .foregroundColor(AppTheme.primary)
                         
-                        Text("Thanks for playing!")
+                        Text("Enjoying Decipher?")
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(AppTheme.textColor(for: colorScheme))
                         
-                        Text("Check out my other projects on GitHub")
+                        Text("If you like the app and want to support development, consider buying me a coffee!")
                             .font(.system(size: 14))
                             .foregroundColor(AppTheme.secondaryTextColor(for: colorScheme))
                             .multilineTextAlignment(.center)
+                            .padding(.horizontal, 8)
                         
                         Button(action: {
-                            if let url = URL(string: "https://github.com/luketucich") {
+                            if let url = URL(string: "https://buymeacoffee.com/luketucich") {
                                 UIApplication.shared.open(url)
                             }
                         }) {
                             HStack(spacing: 8) {
-                                Image(systemName: "link")
+                                Image(systemName: "heart.fill")
                                     .font(.system(size: 14, weight: .semibold))
                                 
-                                Text("github.com/luketucich")
+                                Text("Buy Me a Coffee")
                                     .font(.system(size: 14, weight: .semibold))
                             }
                             .foregroundColor(.white)

@@ -185,9 +185,9 @@ struct HomeView: View {
                             }
                         }) {
                             HStack(spacing: 4) {
-                                Image(systemName: "doc.text.fill")
+                                Image(systemName: "info.circle.fill")
                                     .font(.system(size: 12))
-                                Text("Terms")
+                                Text("About")
                                     .font(.system(size: 12, weight: .medium))
                             }
                             .foregroundColor(AppTheme.primary.opacity(0.7))

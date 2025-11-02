@@ -19,7 +19,7 @@ async function generateTopic(
   const pastAnswers = pastTopics.map((t) => t.answer).join(", "); // Clean list of answers only
 
   const prompt = `
-    Generate a daily puzzle topic for my guessing game Decipher.
+Generate a daily puzzle topic for my guessing game Decipher.
     The goal is to guess the daily topic based on a series of hints.
 
     There are seven topics per week, one for each day (Monday to Sunday).
@@ -33,20 +33,20 @@ async function generateTopic(
 
     **Today is ${date}. Only use holiday-themed topics if today is EXACTLY a major holiday (e.g., spooky for Halloween on October 31; festive for Christmas on December 25). Do NOT theme for nearby dates.**
 
-    **Furthermore, you MUST NOT use any of the following past answers (or very similar ones) that have already been used: ${
+    **Furthermore, you MUST NOT use any of the following past answers (or very similar ones, including synonyms, sequels, or related entries) that have already been used: ${
       pastAnswers || "None"
-    }. Generate something completely new and unique.**
+    }. Generate something completely new, unique, and less predictable.**
 
-    The hints should start vague and get more specific. **Make hints challenging: the first 2-3 should be subtle, requiring thought; avoid obvious giveaways early.**
+    The hints should start vague and get more specific. **Make hints challenging: the first 2-3 should be subtle, requiring thought; avoid obvious giveaways early.** **Ensure the first 3 hints are highly abstract and indirect, forcing players to connect multiple dots; only the last 2 should provide clearer ties to the answer.** **Design hints so they build cumulatively; each subsequent hint should only make sense in combination with previous ones, avoiding standalone reveals.**
 
-    The first hint should be a Category (like "1920s Action Movie" or "Famous Scientist")
-    The second hint should be an Emoji representation (please use only emojis, no text)
-    The third hint should be a Quote related to the answer.
+    The first hint should be a Broad Category (like 'Early 20th Century Adventure Film' or 'Influential Theoretical Physicist') that avoids key identifiers.
+    The second hint should be an Emoji representation (please use only emojis, no text). Use 3-5 emojis that symbolically represent themes or elements indirectly, without direct icons of the answer.
+    The third hint should be an Obscure Quote related to the answer, perhaps from a secondary source or lesser-known context.
     The fourth hint should be a Trivia fact.
     The fifth hint should be a Definition or direct clue.
 
     For daily topics, focus on well-known subjects from various categories like Movies, Books, Historical Figures, Songs, etc.
-    Feel free to do pop culture references, but avoid overly obscure topics. **Choose topics that are recognizable but not too easy, aim for medium-hard difficulty where players might need 3-4 hints.**
+    Feel free to do pop culture references, but avoid overly obscure topics. **Choose topics that are recognizable but lean toward medium-hard to hard difficulty, where players typically need 4-5 hints; prioritize subjects with niche cultural significance or lesser-known details over mainstream hits.**
 
     Try to make the game challenging and fun!
 
@@ -134,7 +134,17 @@ const generateTopics = async (amount: number) => {
   }
 };
 
-generateTopics(7).then(() => {
+// Parse command-line argument for the number of topics (default to 7 if not provided)
+const args = process.argv.slice(2);
+const amount = args.length > 0 ? parseInt(args[0]!, 10) : 7;
+if (isNaN(amount) || amount <= 0) {
+  console.error(
+    "Please provide a valid positive number for the amount of topics."
+  );
+  process.exit(1);
+}
+
+generateTopics(amount).then(() => {
   console.log("Topic generation complete");
   process.exit(0);
 });

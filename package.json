@@ -10,7 +10,6 @@
     "start": "node ./dist/app.js",
     "postinstall": "prisma generate",
     "topic": "tsx ./src/server/scripts/generateTopics.ts",
-    "match": "tsx ./src/server/utils/guessMatcher.ts",
     "play": "tsx ./src/server/scripts/exampleGame.ts"
   },
   "repository": {
@@ -41,7 +40,9 @@
     "morgan": "^1.10.0",
     "node-fetch": "^3.3.2",
     "openai": "^6.7.0",
-    "prisma": "^6.18.0"
+    "prisma": "^6.18.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@types/compression": "^1.7.5",
@@ -50,7 +51,11 @@
     "@types/leo-profanity": "^1.5.4",
     "@types/morgan": "^1.9.9",
     "@types/node": "^24.9.2",
+    "autoprefixer": "^10.4.21",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "nodemon": "^3.1.10",
+    "postcss": "^8.5.6",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

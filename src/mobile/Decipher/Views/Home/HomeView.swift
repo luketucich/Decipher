@@ -8,7 +8,6 @@ struct HomeView: View {
     @State private var buttonPressed = false
     @State private var showHowToPlay = false
     @State private var showSettings = false
-    @State private var showSupport = false
     @State private var showTerms = false
     
     var body: some View {
@@ -174,8 +173,8 @@ struct HomeView: View {
                     .padding(.horizontal, 32)
                     .padding(.top, 16)
                     
-                    // Support and Terms buttons (smaller, less prominent)
-                    HStack(spacing: 16) {
+                    // About button
+                    HStack {
                         Button(action: {
                             if settings.hapticsEnabled {
                                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -188,24 +187,6 @@ struct HomeView: View {
                                 Image(systemName: "info.circle.fill")
                                     .font(.system(size: 12))
                                 Text("About")
-                                    .font(.system(size: 12, weight: .medium))
-                            }
-                            .foregroundColor(AppTheme.primary.opacity(0.7))
-                            .padding(.vertical, 10)
-                        }
-                        
-                        Button(action: {
-                            if settings.hapticsEnabled {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            }
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                showSupport = true
-                            }
-                        }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "heart.fill")
-                                    .font(.system(size: 12))
-                                Text("Support")
                                     .font(.system(size: 12, weight: .medium))
                             }
                             .foregroundColor(AppTheme.primary.opacity(0.7))
@@ -231,13 +212,6 @@ struct HomeView: View {
             .overlay {
                 if showSettings {
                     SettingsView(isPresented: $showSettings)
-                        .transition(.move(edge: .bottom))
-                        .zIndex(1)
-                }
-            }
-            .overlay {
-                if showSupport {
-                    SupportView(isPresented: $showSupport)
                         .transition(.move(edge: .bottom))
                         .zIndex(1)
                 }

@@ -6,6 +6,9 @@ node_modules/
 # Build output
 dist/
 
+# Web-specific
+src/web/.vite/
+
 # Environment variables
 .env
 .env.local
@@ -93,3 +96,5 @@ Thumbs.db
 *.swo
 *~
 
+web/dist
+web/.env

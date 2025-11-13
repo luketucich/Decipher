@@ -155,6 +155,12 @@ struct PlayContentView: View {
         
         let currentGuess = guesses[currentHintIndex] ?? ""
         
+        // If the guess is correct, skip moderation to avoid false positives
+        if GuessMatcher.isCorrectGuess(answer: topic.answer, guess: currentGuess) {
+            processGuess(currentGuess)
+            return
+        }
+        
         // Check content moderation before processing guess
         isCheckingModeration = true
         Task {

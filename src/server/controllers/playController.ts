@@ -8,7 +8,6 @@ import {
   getTopicNumber,
 } from "../repositories/topicRepository.js";
 import { moderateContent } from "../utils/contentModeration.js";
-import isCorrectGuess from "../utils/guessMatcher.js";
 
 /**
  * GET /play/daily
@@ -114,18 +113,6 @@ export const moderateGuess = async (req: Request, res: Response) => {
   }
 
   try {
-    // Get today's topic (server UTC) to check if guess is correct
-    const now = new Date();
-    const today = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-    );
-    const topic = await getTopicByDate(today);
-
-    // If guess matches the correct answer, skip moderation
-    if (topic && isCorrectGuess(topic.answer, guess)) {
-      return res.status(200).json({ appropriate: true });
-    }
-
     const result = await moderateContent(guess);
 
     if (result.flagged) {

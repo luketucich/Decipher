@@ -1,0 +1,11 @@
+ALTER TABLE public."Topic"
+ADD COLUMN IF NOT EXISTS aliases text[] DEFAULT '{}'::text[];
+
+ALTER TABLE public."Topic" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Hint" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Submission" ENABLE ROW LEVEL SECURITY;
+
+GRANT USAGE ON SCHEMA public TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public."Topic" TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public."Hint" TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public."Submission" TO service_role;

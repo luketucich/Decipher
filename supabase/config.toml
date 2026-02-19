@@ -1,0 +1,10 @@
+project_id = "decipher"
+
+[functions.daily-topic]
+verify_jwt = false
+
+[functions.submit-game]
+verify_jwt = false
+
+[functions.topic-stats]
+verify_jwt = false
